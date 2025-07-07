@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>XanFarm Clicker</title>
+</head>
+<body style="text-align:center; font-family:sans-serif;">
+  <h1>🌱 ¡Bienvenido a XanFarm!</h1>
+  <p>Monedas: <span id="coins">0</span></p>
+  <button onclick="plant()">🌾 Plantar</button>
+  <script>
+    let coins = 0;
+    function plant() {
+      coins++;
+      document.getElementById('coins').innerText = coins;
+    }
+  </script>
+</body>
+</html>
