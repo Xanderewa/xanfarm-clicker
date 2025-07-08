@@ -182,25 +182,30 @@
   <p>Monedas: <span id="coins">0</span></p>
 
   <!-- Menú inferior -->
-  <div class="menu">
-    <button id="botonPerfil">🧑‍💻 Perfil</button>
-    <button id="botonInventario">🎒 Inventario</button>
-    <button id="botonCofre">🎁 Cofre</button>
-    <button id="botonMisiones">🧭 Misiones</button>
-    <button>📈 Ranking</button>
-    <button>⚙️ Opciones</button>
-  </div><!-- Modal de Perfil -->
-<div id="profileModal" class="modal">
-  <div class="modal-content">
-    <span class="close-btn" onclick="cerrarPerfil()">×</span>
-    <h2>🧑‍🌾 Tu Perfil</h2>
-    <p><strong>Nombre:</strong> Alexander</p>
-    <p><strong>Monedas:</strong> <span id="perfilCoins">0</span></p>
-    <p><strong>Mejoras:</strong> Ninguna</p>
-    <p><strong>Nivel:</strong> 1</p>
-  </div>
+<div class="menu">
+  <button id="botonPerfil">🧑‍💻 Perfil</button>
+  <button id="botonInventario">🎒 Inventario</button>
+  <button id="botonCofre">🎁 Cofre</button>
+  <button id="botonMisiones">🧭 Misiones</button>
+  <button>📈 Ranking</button>
+  <button>⚙️ Opciones</button>
 </div>
 
+<!-- Modal de Cofre -->
+<div id="cofreModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="cerrarCofre()">×</span>
+    <h2 id="tituloCofre">🎁 Cofre Plata</h2>
+    <div class="tab-selector">
+      <button id="tabPlata" onclick="seleccionarTipoCofre('plata')" class="active">Plata</button>
+      <button id="tabOro" onclick="seleccionarTipoCofre('oro')">Oro</button>
+      <button id="tabDiamante" onclick="seleccionarTipoCofre('diamante')">Diamante</button>
+    </div>
+    <div id="cofreVisual" onclick="abrirCofre()" style="cursor:pointer; font-size:64px; margin:20px 0;">🧰</div>
+    <div id="resultadoCofre"></div>
+    <button onclick="cerrarCofre()">Cerrar</button>
+  </div>
+</div>
 <!-- Modal de Inventario -->
 <div id="inventoryModal" class="modal">
   <div class="modal-content">
