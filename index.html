@@ -2,13 +2,13 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>XanFarm Inventario</title>
+  <title>XanFarm</title>
   <style>
     body {
       font-family: sans-serif;
       text-align: center;
       margin: 0;
-      padding-bottom: 140px;
+      padding-bottom: 160px;
       background-color: #fefae0;
     }
 
@@ -58,12 +58,12 @@
       background: #fff;
       padding: 20px;
       border-radius: 12px;
-      width: 90%;
-      max-width: 420px;
+      width: 92%;
+      max-width: 450px;
       text-align: left;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
-      max-height: 90vh;
+      max-height: 85vh;
       overflow-y: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
     }
 
     .close-btn {
@@ -90,116 +90,282 @@
       border-radius: 6px;
       cursor: pointer;
     }
+
+    .tab-selector button {
+      margin: 5px;
+      padding: 8px 14px;
+      border-radius: 6px;
+      background: #eee;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .tab-selector .active {
+      background: #a3c9a8;
+      color: white;
+    }
+
+    .mission {
+      background: #f8f8f8;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    .mission button {
+      float: right;
+      background: #6a994e;
+      color: #fff;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .mission small {
+      display: block;
+      margin-top: 4px;
+      font-size: 13px;
+      color: #555;
+    }
   </style>
 </head>
+
 <body>
   <h1>🌱 ¡Bienvenido a XanFarm!</h1>
   <p>Monedas: <span id="coins">0</span></p>
 
-  <!-- Menú -->
+  <!-- Menú inferior -->
   <div class="menu">
     <button id="botonPerfil">🧑‍💻 Perfil</button>
     <button id="botonInventario">🎒 Inventario</button>
     <button>🎁 Cofre</button>
+    <button id="botonMisiones">🧭 Misiones</button>
     <button>📈 Ranking</button>
-    <button>🧭 Misiones</button>
+    <button>⚙️ Opciones</button>
+  </div><!-- Modal de Perfil -->
+<div id="profileModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="cerrarPerfil()">×</span>
+    <h2>🧑‍🌾 Tu Perfil</h2>
+    <p><strong>Nombre:</strong> Alexander</p>
+    <p><strong>Monedas:</strong> <span id="perfilCoins">0</span></p>
+    <p><strong>Mejoras:</strong> Ninguna</p>
+    <p><strong>Nivel:</strong> 1</p>
   </div>
+</div>
 
-  <!-- Modal de Perfil -->
-  <div id="profileModal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" onclick="cerrarPerfil()">×</span>
-      <h2>🧑‍🌾 Tu Perfil</h2>
-      <p><strong>Nombre:</strong> Alexander</p>
-      <p><strong>Monedas:</strong> <span id="perfilCoins">0</span></p>
-      <p><strong>Mejoras:</strong> Ninguna</p>
-      <p><strong>Nivel:</strong> 1</p>
+<!-- Modal de Inventario -->
+<div id="inventoryModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="cerrarInventario()">×</span>
+    <h2>🎒 Inventario de Cultivos</h2>
+    <div id="plantList"></div>
+  </div>
+</div>
+
+<!-- Modal de Misiones -->
+<div id="missionsModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="cerrarMisiones()">×</span>
+    <h2>🧭 Misiones</h2>
+    <div class="tab-selector">
+      <button id="tabDiarias" class="active">🔄 Diarias</button>
+      <button id="tabSemanales">📅 Semanales</button>
+      <button id="tabDesafio">💥 Desafíos</button>
     </div>
+    <div id="misionesContenedor"></div>
   </div>
+</div>
+<script>
+let coins = 0;
+document.getElementById("coins").innerText = coins;
 
-  <!-- Modal de Inventario -->
-  <div id="inventoryModal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" onclick="cerrarInventario()">×</span>
-      <h2>🎒 Inventario de Cultivos</h2>
-      <div id="plantList"></div>
-    </div>
-  </div>
+// 🌱 INVENTARIO
+const plants = [
+  { nombre: "Maíz dulce", valor: 2, cantidad: 3, rareza: "Común" },
+  { nombre: "Tomate solar", valor: 3, cantidad: 2, rareza: "Común" },
+  { nombre: "Frijol lunar", valor: 5, cantidad: 1, rareza: "Rara" },
+  { nombre: "Flor de cacao", valor: 8, cantidad: 1, rareza: "Épica" },
+  { nombre: "Uva eléctrica", valor: 12, cantidad: 0, rareza: "Legendaria" },
+  { nombre: "Zanahoria cristal", valor: 4, cantidad: 2, rareza: "Rara" },
+  { nombre: "Melón ámbar", valor: 10, cantidad: 1, rareza: "Épica" },
+  { nombre: "Trigo solar", valor: 1, cantidad: 4, rareza: "Común" },
+  { nombre: "Choclo místico", valor: 7, cantidad: 1, rareza: "Rara" },
+  { nombre: "Cereza de lava", valor: 15, cantidad: 0, rareza: "Legendaria" }
+];
 
-  <!-- Script -->
-  <script>
-    let coins = 0;
-    document.getElementById("coins").innerText = coins;
+// 🌾 MISIONES
+const misiones = {
+  diarias: [
+    {
+      id: "cultivarZanahorias",
+      nombre: "🌿 Cultivar Zanahorias Cristal (3)",
+      requerimiento: 3,
+      recompensa: { monedas: 5 },
+      progreso: 0,
+      tipo: "planta",
+      planta: "Zanahoria cristal",
+      completada: false
+    },
+    {
+      id: "abrirInventario",
+      nombre: "🎒 Abrí el Inventario",
+      requerimiento: 1,
+      recompensa: { monedas: 2 },
+      progreso: 0,
+      tipo: "evento",
+      evento: "inventario",
+      completada: false
+    }
+  ],
+  semanales: [
+    {
+      id: "cultivarMaiz",
+      nombre: "🌽 Cultivar Maíz dulce (10)",
+      requerimiento: 10,
+      recompensa: { monedas: 10 },
+      progreso: 0,
+      tipo: "planta",
+      planta: "Maíz dulce",
+      completada: false
+    }
+  ],
+  desafio: [
+    {
+      id: "legendaria",
+      nombre: "💎 Cultivar planta legendaria (1)",
+      requerimiento: 1,
+      recompensa: { monedas: 20 },
+      progreso: 0,
+      tipo: "rareza",
+      rareza: "Legendaria",
+      completada: false
+    }
+  ]
+};
 
-    // 🪴 Lista de cultivos
-    const plants = [
-      { nombre: "Maíz dulce", valor: 2, cantidad: 3, rareza: "Común" },
-      { nombre: "Tomate solar", valor: 3, cantidad: 2, rareza: "Común" },
-      { nombre: "Frijol lunar", valor: 5, cantidad: 1, rareza: "Rara" },
-      { nombre: "Flor de cacao", valor: 8, cantidad: 1, rareza: "Épica" },
-      { nombre: "Uva eléctrica", valor: 12, cantidad: 0, rareza: "Legendaria" },
-      { nombre: "Zanahoria cristal", valor: 4, cantidad: 2, rareza: "Rara" },
-      { nombre: "Melón ámbar", valor: 10, cantidad: 1, rareza: "Épica" },
-      { nombre: "Trigo solar", valor: 1, cantidad: 4, rareza: "Común" },
-      { nombre: "Choclo místico", valor: 7, cantidad: 1, rareza: "Rara" },
-      { nombre: "Cereza de lava", valor: 15, cantidad: 0, rareza: "Legendaria" }
-    ];
+// 🧩 UTILIDADES
+function actualizarMonedas() {
+  document.getElementById("coins").innerText = coins;
+  document.getElementById("perfilCoins").innerText = coins;
+}
 
-    function actualizarMonedas() {
-      document.getElementById("coins").innerText = coins;
-      document.getElementById("perfilCoins").innerText = coins;
+function cerrarPerfil() {
+  document.getElementById("profileModal").style.display = "none";
+}
+function cerrarInventario() {
+  document.getElementById("inventoryModal").style.display = "none";
+}
+function cerrarMisiones() {
+  document.getElementById("missionsModal").style.display = "none";
+}
+
+// 👤 PERFIL
+document.getElementById("botonPerfil").addEventListener("click", () => {
+  document.getElementById("profileModal").style.display = "flex";
+  actualizarMonedas();
+});
+
+// 🎒 INVENTARIO
+document.getElementById("botonInventario").addEventListener("click", () => {
+  mostrarInventario();
+  document.getElementById("inventoryModal").style.display = "flex";
+  registrarProgreso("inventario");
+});
+
+function mostrarInventario() {
+  const lista = document.getElementById("plantList");
+  lista.innerHTML = "";
+  plants.forEach((planta, index) => {
+    const item = document.createElement("div");
+    item.classList.add("plant");
+    item.innerHTML = `
+      <strong>${planta.nombre}</strong> (${planta.rareza})<br>
+      Valor: +${planta.valor} 💰<br>
+      Cantidad: ${planta.cantidad}
+      ${planta.cantidad > 0 ? `<button onclick="cultivar(${index})">Cultivar</button>` : ""}
+    `;
+    lista.appendChild(item);
+  });
+}
+
+function cultivar(index) {
+  const planta = plants[index];
+  if (planta.cantidad > 0) {
+    coins += planta.valor;
+    planta.cantidad--;
+    registrarCultivo(planta.nombre, planta.rareza);
+    actualizarMonedas();
+    mostrarInventario();
+  }
+}
+
+// 🧭 MISIONES
+document.getElementById("botonMisiones").addEventListener("click", () => {
+  mostrarMisiones("diarias");
+  document.getElementById("missionsModal").style.display = "flex";
+});
+
+document.getElementById("tabDiarias").addEventListener("click", () => mostrarMisiones("diarias"));
+document.getElementById("tabSemanales").addEventListener("click", () => mostrarMisiones("semanales"));
+document.getElementById("tabDesafio").addEventListener("click", () => mostrarMisiones("desafio"));
+
+function mostrarMisiones(tipo) {
+  document.querySelectorAll(".tab-selector button").forEach(btn => btn.classList.remove("active"));
+  document.getElementById("tab" + tipo.charAt(0).toUpperCase() + tipo.slice(1)).classList.add("active");
+
+  const contenedor = document.getElementById("misionesContenedor");
+  contenedor.innerHTML = "";
+
+  misiones[tipo].forEach(m => {
+    const bloque = document.createElement("div");
+    bloque.classList.add("mission");
+    let progresoTexto = `${m.progreso}/${m.requerimiento}`;
+    let btn = "";
+
+    if (m.completada) {
+      progresoTexto = "✔️ Completada";
+    } else if (m.progreso >= m.requerimiento) {
+      btn = `<button onclick="reclamarMision('${tipo}','${m.id}')">Reclamar</button>`;
     }
 
-    function plant() {
-      coins++;
-      actualizarMonedas();
+    bloque.innerHTML = `
+      <strong>${m.nombre}</strong>
+      <small>Recompensa: ${m.recompensa.monedas} 💰</small>
+      <small>Progreso: ${progresoTexto}</small>
+      ${btn}
+    `;
+    contenedor.appendChild(bloque);
+  });
+}
+
+function registrarCultivo(nombre, rareza) {
+  Object.values(misiones).flat().forEach(m => {
+    if (m.completada) return;
+    if (m.tipo === "planta" && m.planta === nombre) m.progreso++;
+    if (m.tipo === "rareza" && m.rareza === rareza) m.progreso++;
+  });
+}
+
+function registrarProgreso(evento) {
+  Object.values(misiones).flat().forEach(m => {
+    if (m.tipo === "evento" && m.evento === evento && !m.completada) {
+      m.progreso++;
     }
+  });
+}
 
-    function cerrarPerfil() {
-      document.getElementById('profileModal').style.display = 'none';
-    }
-
-    function cerrarInventario() {
-      document.getElementById('inventoryModal').style.display = 'none';
-    }
-
-    document.getElementById('botonPerfil').addEventListener('click', () => {
-      document.getElementById('profileModal').style.display = 'flex';
-      actualizarMonedas();
-    });
-
-    document.getElementById('botonInventario').addEventListener('click', () => {
-      mostrarInventario();
-      document.getElementById('inventoryModal').style.display = 'flex';
-    });
-
-    function mostrarInventario() {
-      const lista = document.getElementById("plantList");
-      lista.innerHTML = "";
-
-      plants.forEach((planta, index) => {
-        const item = document.createElement("div");
-        item.classList.add("plant");
-
-        item.innerHTML = `
-          <strong>${planta.nombre}</strong> (${planta.rareza})<br>
-          Valor: +${planta.valor} 💰<br>
-          Cantidad: ${planta.cantidad}
-          ${planta.cantidad > 0 ? `<button onclick="cultivar(${index})">Cultivar</button>` : ""}
-        `;
-        lista.appendChild(item);
-      });
-    }
-
-    function cultivar(index) {
-      const planta = plants[index];
-      if (planta.cantidad > 0) {
-        coins += planta.valor;
-        planta.cantidad--;
-        actualizarMonedas();
-        mostrarInventario();
-      }
-    }
-  </script>
-</body>
-</html>
+function reclamarMision(tipo, id) {
+  const m = misiones[tipo].find(x => x.id === id);
+  if (m && !m.completada && m.progreso >= m.requerimiento) {
+    m.completada = true;
+    coins += m.recompensa.monedas;
+    actualizarMonedas();
+    mostrarMisiones(tipo);
+    alert(`¡Misión completada! Ganaste ${m.recompensa.monedas} monedas 🎉`);
+  }
+}
+</script>
