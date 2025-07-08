@@ -807,6 +807,355 @@
     actualizarLlaves();
     mostrarInventario();
   });
+document.addEventListener("DOMContentLoaded", () => {
+    // ========== CONSTANTES Y VARIABLES ==========
+    const PLANTS_DEFAULT = [
+      { nombre: "Piña dorada", valor: 500, cantidad: 0, rareza: "Legendaria", img: "https://i.imgur.com/y0et0jw.png" },
+      { nombre: "Uva eléctrica", valor: 350, cantidad: 0, rareza: "Legendaria", img: "https://i.imgur.com/igHZ4i0.png" },
+      { nombre: "Cereza de lava", valor: 350, cantidad: 0, rareza: "Legendaria", img: "https://i.imgur.com/FZ3ix2y.png" },
+      { nombre: "Flor de cacao", valor: 180, cantidad: 0, rareza: "Épica", img: "https://i.imgur.com/teOuyYL.png" },
+      { nombre: "Melón ámbar", valor: 180, cantidad: 0, rareza: "Épica", img: "https://i.imgur.com/fnASHdb.png" },
+      { nombre: "Frijol lunar", valor: 70, cantidad: 0, rareza: "Rara", img: "https://i.imgur.com/uENLIRn.png" },
+      { nombre: "Zanahoria cristal", valor: 70, cantidad: 0, rareza: "Rara", img: "https://i.imgur.com/axk0pOC.png" },
+      { nombre: "Choclo místico", valor: 70, cantidad: 0, rareza: "Rara", img: "https://i.imgur.com/ram9D6B.png" },
+      { nombre: "Maíz dulce", valor: 30, cantidad: 0, rareza: "Común", img: "https://i.imgur.com/E2qm0LM.png" },
+      { nombre: "Tomate solar", valor: 30, cantidad: 0, rareza: "Común", img: "https://i.imgur.com/imJ5yn3.png" },
+      { nombre: "Trigo solar", valor: 30, cantidad: 0, rareza: "Común", img: "https://i.imgur.com/X8D6y8K.png" }
+    ];
+
+    const PAQUETES_TIENDA = [
+      { 
+        id: 1, 
+        nombre: "Paquete Inicial", 
+        llaves: 100, 
+        cultivos: [{ rareza: "Épica", cantidad: 1 }], 
+        precio: 2.99,
+        descripcion: "Perfecto para empezar"
+      },
+      { 
+        id: 2, 
+        nombre: "Paquete Avanzado", 
+        llaves: 250, 
+        cultivos: [{ rareza: "Rara", cantidad: 3 }], 
+        precio: 5,
+        descripcion: "Impulsa tu granja"
+      },
+      { 
+        id: 3, 
+        nombre: "Paquete Épico", 
+        llaves: 500, 
+        cultivos: [
+          { rareza: "Épica", cantidad: 2 },
+          { rareza: "Rara", cantidad: 2 }
+        ], 
+        precio: 10,
+        descripcion: "Crecimiento garantizado"
+      },
+      { 
+        id: 4, 
+        nombre: "Paquete Legendario", 
+        llaves: 700, 
+        cultivos: [{ rareza: "Legendaria", cantidad: 1 }], 
+        precio: 20,
+        descripcion: "¡Un legendario te espera!"
+      },
+      { 
+        id: 5, 
+        nombre: "Paquete Mega Épico", 
+        llaves: 1000, 
+        cultivos: [
+          { rareza: "Legendaria", cantidad: 1 },
+          { rareza: "Épica", cantidad: 2 }
+        ], 
+        precio: 35,
+        descripcion: "El poder en tus manos"
+      },
+      { 
+        id: 6, 
+        nombre: "Paquete Semanal VIP", 
+        llaves: 2100, // 300/día
+        cultivos: [
+          { rareza: "Legendaria", cantidad: 3 },
+          { rareza: "Épica", cantidad: 5 }
+        ], 
+        precio: 15,
+        descripcion: "300 llaves/día por 7 días"
+      }
+    ];
+
+    // Variables del juego
+    let coins = 0, keys = 0;
+    let plants = JSON.parse(JSON.stringify(PLANTS_DEFAULT));
+    let cofresGratis = { oro: 0, plata: 0 };
+    let lastRecolectado = Date.now();
+    const periodoRecolecta = 12 * 60 * 60 * 1000; // 12 horas
+
+    // ========== FUNCIONES BÁSICAS ==========
+    function guardarProgreso() {
+      localStorage.setItem("xanfarm-progreso", JSON.stringify({
+        coins, keys, plants, cofresGratis, lastRecolectado
+      }));
+    }
+    
+    function cargarProgreso() {
+      const data = localStorage.getItem("xanfarm-progreso");
+      if (!data) return false;
+      try {
+        const obj = JSON.parse(data);
+        coins = obj.coins ?? 0;
+        keys = obj.keys ?? 0;
+        plants = obj.plants ?? JSON.parse(JSON.stringify(PLANTS_DEFAULT));
+        cofresGratis = obj.cofresGratis ?? { oro: 0, plata: 0 };
+        lastRecolectado = obj.lastRecolectado ?? Date.now();
+        return true;
+      } catch { return false; }
+    }
+
+    // ========== SISTEMA DE PRODUCCIÓN ==========
+    function produccionPorMinuto() {
+      let total = 0;
+      plants.forEach(p => total += (p.valor * p.cantidad) / 1440);
+      return total;
+    }
+
+    function produccionPorDia() {
+      let total = 0;
+      plants.forEach(p => total += p.valor * p.cantidad);
+      return total;
+    }
+
+    function actualizarBarraProduccion() {
+      const ahora = Date.now();
+      const tiempoPasado = Math.max(0, ahora - lastRecolectado);
+      const progreso = Math.min(1, tiempoPasado / periodoRecolecta);
+      document.getElementById("barraProduccion").style.width = (progreso * 100) + "%";
+      
+      let tiempoRestante = periodoRecolecta - tiempoPasado;
+      if (tiempoRestante < 0) tiempoRestante = 0;
+      document.getElementById("timerProduccion").innerText = msToHMS(tiempoRestante);
+      
+      document.getElementById("btnRecolectar").disabled = progreso < 1 || produccionPorMinuto() === 0;
+    }
+
+    function msToHMS(ms) {
+      let total = Math.floor(ms / 1000);
+      const h = String(Math.floor(total / 3600)).padStart(2, "0");
+      total %= 3600;
+      const m = String(Math.floor(total / 60)).padStart(2, "0");
+      const s = String(total % 60).padStart(2, "0");
+      return `${h}:${m}:${s}`;
+    }
+
+    // ========== SISTEMA DE COFRES ==========
+    const cofres = {
+      plata: { 
+        nombre: "Plata", 
+        img: "https://i.imgur.com/dYd1aoN.png", 
+        llaves: 10, 
+        btnTexto: "Abrir Cofre de Plata" 
+      },
+      oro: { 
+        nombre: "Oro", 
+        img: "https://i.imgur.com/HpkO9qJ.png", 
+        llaves: 50, 
+        btnTexto: "Abrir Cofre de Oro" 
+      },
+      diamante: { 
+        nombre: "Diamante", 
+        img: "https://i.imgur.com/HanPFOR.png", 
+        llaves: 100, 
+        btnTexto: "Abrir Cofre Diamante" 
+      }
+    };
+
+    const probabilidades = {
+      plata: [ 
+        { rareza: "Legendaria", prob: 2.5 },
+        { rareza: "Épica", prob: 10 },
+        { rareza: "Rara", prob: 37.5 },
+        { rareza: "Común", prob: 50 }
+      ],
+      oro: [ 
+        { rareza: "Legendaria", prob: 10 },
+        { rareza: "Épica", prob: 25 },
+        { rareza: "Rara", prob: 35 },
+        { rareza: "Común", prob: 30 }
+      ],
+      diamante: [ 
+        { rareza: "Legendaria", prob: 20 },
+        { rareza: "Épica", prob: 35 },
+        { rareza: "Rara", prob: 30 },
+        { rareza: "Común", prob: 15 }
+      ]
+    };
+
+    function actualizarCofreUI(tipo) {
+      const cofre = cofres[tipo];
+      document.getElementById("tituloCofre").innerText = `🎁 Cofre ${cofre.nombre}`;
+      document.getElementById("imgCofre").src = cofre.img;
+      document.getElementById("llavesNecesarias").innerText = cofre.llaves;
+      
+      let gratis = cofresGratisDisponibles(tipo);
+      let infoExtra = gratis > 0 ? 
+        `<div style="color:#24c24c;font-weight:bold;">Te quedan ${gratis} cofres gratis para abrir</div>` : 
+        "";
+      
+      document.getElementById("cofreInfo").innerHTML = `
+        Necesitas <span id="llavesNecesarias">${cofre.llaves}</span> llaves para abrir este cofre.<br>
+        <span class="cofre-keys">Tienes: <span id="userKeys">${keys}</span> llaves</span>
+        ${infoExtra}
+      `;
+      
+      document.getElementById("abrirCofreBtn").innerText = cofre.btnTexto;
+      document.getElementById("abrirCofreBtn").disabled = (keys < cofre.llaves && gratis === 0);
+      document.getElementById("resultadoCofre").innerHTML = "";
+    }
+
+    function abrirCofre(tipo, esGratis) {
+      const imgCofre = document.getElementById("imgCofre");
+      imgCofre.classList.add("abierto");
+      
+      setTimeout(() => {
+        imgCofre.classList.remove("abierto");
+        const resultado = calcularCofre(tipo);
+        mostrarResultadoCofre(resultado);
+        guardarProgreso();
+      }, 700);
+    }
+
+    function calcularCofre(tipo) {
+      const tabla = probabilidades[tipo];
+      const random = Math.random() * 100;
+      let acumulado = 0;
+      let rarezaElegida = "Común";
+      
+      for (const p of tabla) {
+        acumulado += p.prob;
+        if (random <= acumulado) {
+          rarezaElegida = p.rareza;
+          break;
+        }
+      }
+      
+      let posibles = plants.filter(p => p.rareza === rarezaElegida);
+      return posibles[Math.floor(Math.random() * posibles.length)];
+    }
+
+    // ========== INTERFAZ DE USUARIO ==========
+    function mostrarInventario() {
+      const lista = document.getElementById("plantList");
+      lista.innerHTML = "";
+      let totalProd = 0;
+      
+      plants.forEach((planta) => {
+        if (planta.cantidad > 0) {
+          totalProd += planta.valor * planta.cantidad;
+          lista.innerHTML += `
+          <div class="plant">
+            <img src="${planta.img}" alt="${planta.nombre}">
+            <div class="plant-info">
+              <b>${planta.nombre}</b> 
+              <span style="color:${
+                planta.rareza === "Legendaria" ? "#ffdf00" :
+                planta.rareza === "Épica" ? "#c000ff" : "#00b4ff"
+              };">[${planta.rareza}]</span><br>
+              Cantidad: <b>${planta.cantidad}</b>
+              <span class="production">+${planta.valor * planta.cantidad} monedas/día</span>
+            </div>
+          </div>
+          `;
+        }
+      });
+      
+      if (totalProd === 0) {
+        lista.innerHTML = `<div style="color:#888;font-size:1.1em;margin:20px 0;">Aún no tienes cultivos.<br>¡Abre cofres para empezar!</div>`;
+      }
+    }
+
+    function mostrarTienda(tab = "paquetes") {
+      let html = "";
+      
+      if (tab === "paquetes") {
+        html = PAQUETES_TIENDA.map(p => `
+          <div class="paquete">
+            <h3>${p.nombre}</h3>
+            <p>${p.descripcion}</p>
+            <p><b>${p.llaves} llaves</b> + ${p.cultivos.map(c => `${c.cantidad}x ${c.rareza}`).join(", ")}</p>
+            <button class="btn-comprar" onclick="comprarPaquete(${p.id})">$${p.precio} USD</button>
+          </div>
+        `).join("");
+      } else {
+        html = `
+          <div class="paquete">
+            <h3>💎 Convertir Monedas</h3>
+            <p>100 monedas = 10 llaves</p>
+            <button class="btn-comprar" onclick="convertirMonedas()">Convertir</button>
+          </div>
+        `;
+      }
+      
+      document.getElementById("tiendaContenido").innerHTML = html;
+    }
+
+    // ========== FUNCIONALIDADES NUEVAS ==========
+    function comprarPaquete(id) {
+      alert("¡Redirigiendo a método de pago!\n\n(En la versión final esto conectará con Telegram/TON)");
+      // Aquí iría la lógica de compra real
+    }
+
+    function convertirMonedas() {
+      if (coins >= 100) {
+        coins -= 100;
+        keys += 10;
+        actualizarMonedas();
+        actualizarLlaves();
+        alert("¡Conversión exitosa! +10 llaves");
+      } else {
+        alert("Necesitas al menos 100 monedas");
+      }
+    }
+
+    function borrarProgreso() {
+      if (confirm("⚠️ ¿Borrar TODOS tus datos? Esto no se puede deshacer.")) {
+        localStorage.clear();
+        location.reload();
+      }
+    }
+
+    // ========== EVENT LISTENERS ==========
+    document.getElementById("botonOpciones").addEventListener("click", () => {
+      document.getElementById("optionsModal").style.display = "flex";
+    });
+
+    document.getElementById("sliderBrillo").addEventListener("input", (e) => {
+      document.documentElement.style.filter =`brightness(${e.target.value}%)`;
+    });
+
+    document.getElementById("btnSecreto").addEventListener("click", () => {
+      alert("¡Próximamente! 🌟\n\n(Secretos épicos en desarrollo...)");
+    });
+
+    // ========== INICIALIZACIÓN ==========
+    function init() {
+      // Cargar progreso o iniciar nuevo juego
+      if (!cargarProgreso()) {
+        coins = 0;
+        keys = 0;
+        plants.forEach(p => p.cantidad = 0);
+        cofresGratis = { oro: 1, plata: 3 };
+        lastRecolectado = Date.now();
+        guardarProgreso();
+      }
+
+      // Actualizar UI
+      actualizarMonedas();
+      actualizarLlaves();
+      mostrarInventario();
+      setInterval(actualizarBarraProduccion, 1000);
+    }
+
+    init();
+  });
   </script>
 </body>
 </html>
