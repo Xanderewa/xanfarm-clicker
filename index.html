@@ -2,13 +2,13 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>XanFarm Clicker</title>
+  <title>XanFarm Inventario</title>
   <style>
     body {
       font-family: sans-serif;
       text-align: center;
       margin: 0;
-      padding-bottom: 100px;
+      padding-bottom: 140px;
       background-color: #fefae0;
     }
 
@@ -41,7 +41,6 @@
       transform: scale(0.97);
     }
 
-    /* 🧑‍🌾 Estilos para la ventana de perfil */
     .modal {
       position: fixed;
       top: 0;
@@ -59,10 +58,12 @@
       background: #fff;
       padding: 20px;
       border-radius: 12px;
-      width: 80%;
-      max-width: 400px;
+      width: 90%;
+      max-width: 420px;
       text-align: left;
       box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      max-height: 90vh;
+      overflow-y: auto;
     }
 
     .close-btn {
@@ -71,24 +72,40 @@
       font-size: 20px;
       font-weight: bold;
     }
+
+    .plant {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      margin: 10px 0;
+      background: #fafafa;
+    }
+
+    .plant button {
+      float: right;
+      background: #a3c9a8;
+      color: #fff;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <h1>🌱 ¡Bienvenido a XanFarm!</h1>
   <p>Monedas: <span id="coins">0</span></p>
-  <button onclick="plant()">🌾 Plantar</button>
 
-  <!-- 🌾 Menú inferior -->
+  <!-- Menú -->
   <div class="menu">
     <button id="botonPerfil">🧑‍💻 Perfil</button>
-    <button>🛒 Tienda</button>
+    <button id="botonInventario">🎒 Inventario</button>
     <button>🎁 Cofre</button>
-    <button>🌱 Plantar</button>
     <button>📈 Ranking</button>
     <button>🧭 Misiones</button>
   </div>
 
-  <!-- 🧑‍🌾 Ventana de perfil -->
+  <!-- Modal de Perfil -->
   <div id="profileModal" class="modal">
     <div class="modal-content">
       <span class="close-btn" onclick="cerrarPerfil()">×</span>
@@ -100,22 +117,88 @@
     </div>
   </div>
 
-  <!-- 🧠 Script final -->
+  <!-- Modal de Inventario -->
+  <div id="inventoryModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="cerrarInventario()">×</span>
+      <h2>🎒 Inventario de Cultivos</h2>
+      <div id="plantList"></div>
+    </div>
+  </div>
+
+  <!-- Script -->
   <script>
     let coins = 0;
+    document.getElementById("coins").innerText = coins;
+
+    // 🪴 Lista de cultivos
+    const plants = [
+      { nombre: "Maíz dulce", valor: 2, cantidad: 3, rareza: "Común" },
+      { nombre: "Tomate solar", valor: 3, cantidad: 2, rareza: "Común" },
+      { nombre: "Frijol lunar", valor: 5, cantidad: 1, rareza: "Rara" },
+      { nombre: "Flor de cacao", valor: 8, cantidad: 1, rareza: "Épica" },
+      { nombre: "Uva eléctrica", valor: 12, cantidad: 0, rareza: "Legendaria" },
+      { nombre: "Zanahoria cristal", valor: 4, cantidad: 2, rareza: "Rara" },
+      { nombre: "Melón ámbar", valor: 10, cantidad: 1, rareza: "Épica" },
+      { nombre: "Trigo solar", valor: 1, cantidad: 4, rareza: "Común" },
+      { nombre: "Choclo místico", valor: 7, cantidad: 1, rareza: "Rara" },
+      { nombre: "Cereza de lava", valor: 15, cantidad: 0, rareza: "Legendaria" }
+    ];
+
+    function actualizarMonedas() {
+      document.getElementById("coins").innerText = coins;
+      document.getElementById("perfilCoins").innerText = coins;
+    }
 
     function plant() {
       coins++;
-      document.getElementById('coins').innerText = coins;
+      actualizarMonedas();
     }
-
-    document.getElementById('botonPerfil').addEventListener('click', function () {
-      document.getElementById('perfilCoins').innerText = coins;
-      document.getElementById('profileModal').style.display = 'flex';
-    });
 
     function cerrarPerfil() {
       document.getElementById('profileModal').style.display = 'none';
+    }
+
+    function cerrarInventario() {
+      document.getElementById('inventoryModal').style.display = 'none';
+    }
+
+    document.getElementById('botonPerfil').addEventListener('click', () => {
+      document.getElementById('profileModal').style.display = 'flex';
+      actualizarMonedas();
+    });
+
+    document.getElementById('botonInventario').addEventListener('click', () => {
+      mostrarInventario();
+      document.getElementById('inventoryModal').style.display = 'flex';
+    });
+
+    function mostrarInventario() {
+      const lista = document.getElementById("plantList");
+      lista.innerHTML = "";
+
+      plants.forEach((planta, index) => {
+        const item = document.createElement("div");
+        item.classList.add("plant");
+
+        item.innerHTML = `
+          <strong>${planta.nombre}</strong> (${planta.rareza})<br>
+          Valor: +${planta.valor} 💰<br>
+          Cantidad: ${planta.cantidad}
+          ${planta.cantidad > 0 ? `<button onclick="cultivar(${index})">Cultivar</button>` : ""}
+        `;
+        lista.appendChild(item);
+      });
+    }
+
+    function cultivar(index) {
+      const planta = plants[index];
+      if (planta.cantidad > 0) {
+        coins += planta.valor;
+        planta.cantidad--;
+        actualizarMonedas();
+        mostrarInventario();
+      }
     }
   </script>
 </body>
