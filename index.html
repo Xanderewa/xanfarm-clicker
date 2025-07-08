@@ -1,768 +1,138 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>XanFarm</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <style>
-    html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      background-color: #fefae0;
-      height: 100%;
-      width: 100vw;
-      overscroll-behavior: contain;
-    }
-    #pantallaPrincipal {
-      background-image: url("https://i.imgur.com/qbJMnhv.png");
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      min-height: 100vh;
-      min-width: 100vw;
-      height: 100vh;
-      width: 100vw;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      color: white;
-      padding: 20px 0 0 0;
-      z-index: 1;
-      position: relative;
-      box-sizing: border-box;
-    }
-    .moneda-bar {
-      margin: 0 0 10px 0;
-      display: flex;
-      gap: 14px;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1em;
-    }
-    .moneda-bar span {
-      background: rgba(255,255,255,0.85);
-      color: #333;
-      border-radius: 16px;
-      padding: 6px 14px;
-      margin: 0 2px;
-      font-weight: bold;
-      display: inline-block;
-      min-width: 70px;
-    }
-    .menu {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100vw;
-      background: #fff;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-around;
-      padding: 10px 0;
-      box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
-      z-index: 999;
-    }
-    .menu button {
-      flex: 1 0 30%;
-      margin: 6px 4px;
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: none;
-      background-color: #fff;
-      cursor: pointer;
-      transition: transform 0.1s;
-    }
-    .menu button:active { transform: scale(0.97); }
-    .modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-color: rgba(0,0,0,0.4);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-    .modal-content {
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      width: 92%;
-      max-width: 450px;
-      text-align: center;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
-      color: #222;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .close-btn {
-      align-self: flex-end;
-      cursor: pointer;
-      font-size: 20px;
-      font-weight: bold;
-      margin-bottom: 8px;
-    }
-    .cofre-img {
-      width: 140px;
-      max-width: 80vw;
-      margin: 24px auto 12px auto;
-      display: block;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-    .cofre-img.abierto {
-      animation: cofre-abierto 0.7s cubic-bezier(.21,1.02,.73,.97);
-    }
-    @keyframes cofre-abierto {
-      0% { transform: scale(1) rotate(0deg);}
-      30% { transform: scale(1.18) rotate(-8deg);}
-      60% { transform: scale(1.1) rotate(6deg);}
-      100% { transform: scale(1) rotate(0deg);}
-    }
-    .cofre-info {
-      margin-bottom: 14px;
-      color: #222;
-      font-weight: bold;
-    }
-    .cofre-keys {
-      font-size: 1rem;
-      margin-top: 2px;
-    }
-    .cofre-open-btn {
-      padding: 10px 26px;
-      background-color: #3777ca;
-      color: white;
-      border: 0;
-      border-radius: 8px;
-      font-size: 1.1rem;
-      margin-bottom: 12px;
-      margin-top: 4px;
-      cursor: pointer;
-      transition: background 0.18s;
-    }
-    .cofre-open-btn:disabled {
-      background: #aaa;
-      cursor: not-allowed;
-    }
-    .tab-selector {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 12px;
-      gap: 6px;
-    }
-    .tab-selector button {
-      margin: 4px 0;
-      padding: 8px 14px;
-      border: none;
-      border-radius: 6px;
-      background: #eee;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    .tab-selector .active {
-      background: #3777ca;
-      color: white;
-    }
-    #resultadoCofre { min-height: 24px; }
-
-    .plant {
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 10px;
-      margin: 10px 0;
-      background: #fafafa;
-      text-align: left;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .plant img {
-      width: 34px;
-      border-radius: 5px;
-    }
-    .plant-info {
-      flex: 1;
-    }
-    .production {
-      color: #3777ca;
-      font-size: 14px;
-      font-weight: bold;
-      margin-left: 8px;
-    }
-    #progresoProduccion {
-      width: 270px;
-      height: 22px;
-      background: #eee;
-      border-radius: 13px;
-      margin: 10px auto 5px auto;
-      position: relative;
-      overflow: hidden;
-      border: 1.5px solid #bdbdbd;
-      box-shadow: 0 1px 5px #0001;
-    }
-    #barraProduccion {
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      height: 100%;
-      background: linear-gradient(90deg, #ffe066, #4dd599 90%);
-      width: 0%;
-      border-radius: 13px 0 0 13px;
-      transition: width 0.7s cubic-bezier(.23,.89,.43,.99);
-    }
-    #contadorProduccion {
-      font-weight: bold;
-      margin-bottom: 8px;
-      font-size: 1.07em;
-      color: #13314e;
-      text-shadow: 0 1px 5px #fff, 0 1px 6px #13314e22;
-    }
-    #btnRecolectar {
-      margin: 10px auto 0 auto;
-      padding: 12px 30px;
-      font-size: 1.13em;
-      background: #4dd599;
-      color: #fff;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background 0.2s;
-      box-shadow: 0 2px 6px #4dd59944;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    #btnRecolectar:disabled {
-      background: #ddd;
-      color: #aaa;
-      cursor: not-allowed;
-    }
-    #granjeroAnim {
-      width: 40px;
-      height: 40px;
-      margin-right: 5px;
-      border-radius: 50%;
-      object-fit: cover;
-      background: #eee;
-      animation: correr 1.2s infinite linear;
-      display: inline-block;
-    }
-    @keyframes correr {
-      0% { transform: translateX(0);}
-      25% { transform: translateX(15px);}
-      50% { transform: translateX(0);}
-      75% { transform: translateX(-15px);}
-      100% { transform: translateX(0);}
-    }
-    #recoleccionAnimada {
-      font-size: 2.2em;
-      color: #ffe066;
-      position: absolute;
-      left: 50%;
-      top: 15%;
-      transform: translate(-50%,0);
-      z-index: 1001;
-      pointer-events: none;
-      animation: monedasSalto 1.2s cubic-bezier(.21,1.02,.73,.97);
-      display: none;
-      background: rgba(255,255,255,0.82);
-      border-radius: 18px;
-      padding: 18px 36px;
-      box-shadow: 0 2px 16px #ffe06677;
-    }
-    @keyframes monedasSalto {
-      0% { opacity:0; transform: translate(-50%,30px) scale(0.7);}
-      20% { opacity:1; transform: translate(-50%,-16px) scale(1.07);}
-      60% { opacity:1; transform: translate(-50%,-28px) scale(1.07);}
-      100% { opacity:0; transform: translate(-50%,0) scale(0.7);}
-    }
-    .moneda-icon {
-      width: 20px;
-      vertical-align: middle;
-      margin-right: 3px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xanderewa Clicker</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #ff6b6b;
+        }
+        .contador {
+            font-size: 24px;
+            margin: 20px 0;
+        }
+        .botones {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .seccion {
+            margin: 30px 0;
+            padding: 15px;
+            border: 1px dashed #ccc;
+            border-radius: 5px;
+        }
+        .proximamente {
+            color: #888;
+            font-style: italic;
+        }
+    </style>
 </head>
-<body>
-  <div id="recoleccionAnimada"></div>
-  <div id="pantallaPrincipal">
-    <h1>🌱 ¡Bienvenido a XanFarm!</h1>
-    <div class="moneda-bar">
-      <span>
-        <img src="https://i.imgur.com/n9OyA2U.png" class="moneda-icon" alt="Moneda">
-        Monedas: <span id="coins">0</span>
-      </span>
-      <span>🔑 Llaves: <span id="keys">0</span></span>
-    </div>
-    <div id="progresoProduccion">
-      <div id="barraProduccion"></div>
-    </div>
-    <div id="contadorProduccion"><b>Producción lista en:</b> <span id="timerProduccion">--:--:--</span></div>
-    <button id="btnRecolectar" disabled>
-      <img id="granjeroAnim" src="https://i.imgur.com/bCqQ3gO.gif" alt="Granjero corriendo" style="background:#eee;">
-      Recolectar producción
-    </button>
-  </div>
-
-  <div class="menu">
-    <button id="botonPerfil">🧑‍💻 Perfil</button>
-    <button id="botonInventario">🎒 Inventario</button>
-    <button id="botonCofre">🎁 Cofre</button>
-    <button id="botonMisiones">🧭 Misiones</button>
-    <button id="botonTienda">🏪 Tienda</button>
-    <button>⚙️ Opciones</button>
-  </div>
-
-  <!-- Cofres Modal -->
-  <div id="cofreModal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" id="cerrarCofreBtn">×</span>
-      <h2 id="tituloCofre">🎁 Cofre Plata</h2>
-      <div class="tab-selector">
-        <button id="tabPlata" class="active">Plata</button>
-        <button id="tabOro">Oro</button>
-        <button id="tabDiamante">Diamante</button>
-      </div>
-      <img id="imgCofre" class="cofre-img" src="https://i.imgur.com/dYd1aoN.png" alt="Cofre" />
-      <div class="cofre-info" id="cofreInfo">
-        Necesitas <span id="llavesNecesarias">10</span> llaves para abrir este cofre.<br>
-        <span class="cofre-keys">Tienes: <span id="userKeys">0</span> llaves</span>
-      </div>
-      <button id="abrirCofreBtn" class="cofre-open-btn">Abrir Cofre de Plata</button>
-      <div id="resultadoCofre"></div>
-      <button id="cerrarCofreBtn2">Cerrar</button>
-    </div>
-  </div>
-
-  <!-- Perfil Modal -->
-  <div id="profileModal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" id="cerrarPerfilBtn">×</span>
-      <h2>🧑‍🌾 Tu Perfil</h2>
-      <p><strong>Rango:</strong> <span id="perfilRango"></span></p>
-      <p><strong>Producción diaria:</strong> <span id="perfilProduccion"></span> monedas/día</p>
-      <p><strong>Monedas:</strong> <span id="perfilCoins">0</span></p>
-      <p><strong>Llaves:</strong> <span id="perfilKeys">0</span></p>
-      <p><strong>Nivel:</strong> 1</p>
-    </div>
-  </div>
-
-  <!-- Inventario Modal -->
-  <div id="inventoryModal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" id="cerrarInventarioBtn">×</span>
-      <h2>🎒 Inventario de Cultivos</h2>
-      <div id="plantList"></div>
-    </div>
-  </div>
-
-  <!-- Misiones Modal -->
-  <div id="missionsModal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" id="cerrarMisionesBtn">×</span>
-      <h2>🧭 Misiones</h2>
-      <div class="tab-selector">
-        <button id="tabDiarias" class="active">🔄 Diarias</button>
-        <button id="tabSemanales">📅 Semanales</button>
-        <button id="tabDesafio">💥 Desafíos</button>
-      </div>
-      <div id="misionesContenedor"></div>
-    </div>
-  </div>
-
-  <!-- Tienda (próximamente) -->
-  <div id="shopModal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" id="cerrarTiendaBtn">×</span>
-      <h2>🏪 Tienda</h2>
-      <p>¡Próximamente podrás comprar llaves, cambiar monedas y adquirir UsdtV!</p>
-    </div>
-  </div>
-
-  <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    // ---------- DATOS POR DEFECTO ----------
-    const PLANTS_DEFAULT = [
-      { nombre: "Piña dorada", valor: 500, cantidad: 0, rareza: "Legendaria", img: "https://i.imgur.com/2w6r5Wv.png" },
-      { nombre: "Uva eléctrica", valor: 350, cantidad: 0, rareza: "Legendaria", img: "https://i.imgur.com/8uHi4ca.png" },
-      { nombre: "Cereza de lava", valor: 350, cantidad: 0, rareza: "Legendaria", img: "https://i.imgur.com/KfL5jvQ.png" },
-      { nombre: "Flor de cacao", valor: 180, cantidad: 0, rareza: "Épica", img: "https://i.imgur.com/zq0Qp8m.png" },
-      { nombre: "Melón ámbar", valor: 180, cantidad: 0, rareza: "Épica", img: "https://i.imgur.com/4z6jxtM.png" },
-      { nombre: "Frijol lunar", valor: 70, cantidad: 0, rareza: "Rara", img: "https://i.imgur.com/Cv6oKfK.png" },
-      { nombre: "Zanahoria cristal", valor: 70, cantidad: 0, rareza: "Rara", img: "https://i.imgur.com/nW6w9p6.png" },
-      { nombre: "Choclo místico", valor: 70, cantidad: 0, rareza: "Rara", img: "https://i.imgur.com/ram9D6B.png" },
-      { nombre: "Maíz dulce", valor: 30, cantidad: 0, rareza: "Común", img: "https://i.imgur.com/0JXJt1N.png" },
-      { nombre: "Tomate solar", valor: 30, cantidad: 0, rareza: "Común", img: "https://i.imgur.com/5e4N6mK.png" },
-      { nombre: "Trigo solar", valor: 30, cantidad: 0, rareza: "Común", img: "https://i.imgur.com/Va8E9kE.png" }
-    ];
-
-    // ---------- CARGA Y GUARDADO ----------
-    function guardarProgreso() {
-      localStorage.setItem("xanfarm-progreso", JSON.stringify({
-        coins, keys, plants, cofresGratis, lastRecolectado
-      }));
-    }
-    function cargarProgreso() {
-      const data = localStorage.getItem("xanfarm-progreso");
-      if (!data) return false;
-      try {
-        const obj = JSON.parse(data);
-        coins = obj.coins ?? 0;
-        keys = obj.keys ?? 0;
-        plants = obj.plants ?? JSON.parse(JSON.stringify(PLANTS_DEFAULT));
-        cofresGratis = obj.cofresGratis ?? { oro: 0, plata: 0 };
-        lastRecolectado = obj.lastRecolectado ?? Date.now();
-        return true;
-      } catch { return false; }
-    }
-
-    // ---------- VARIABLES DEL JUEGO ----------
-    let coins = 0, keys = 0;
-    let plants = JSON.parse(JSON.stringify(PLANTS_DEFAULT));
-    let cofresGratis = { oro: 0, plata: 0 };
-    let lastRecolectado = Date.now();
-
-    // ---------- BONO DE BIENVENIDA ----------
-    let yaRecibioBono = localStorage.getItem("xanfarm-yaRecibioBono") === "1";
-    if (!cargarProgreso()) {
-      coins = 0;
-      keys = 0;
-      plants = JSON.parse(JSON.stringify(PLANTS_DEFAULT));
-      plants.forEach(p => p.cantidad = 0);
-      cofresGratis = { oro: 1, plata: 3 };
-      lastRecolectado = Date.now();
-      guardarProgreso();
-    }
-    if (!yaRecibioBono) {
-      cofresGratis = { oro: 1, plata: 3 };
-      localStorage.setItem("xanfarm-yaRecibioBono", "1");
-      guardarProgreso();
-    }
-
-    // ----------- SISTEMA DE PRODUCCIÓN AUTOMÁTICA -----------
-    const periodoRecolecta = 12 * 60 * 60 * 1000; // 12 horas
-    function produccionPorMinuto() {
-      let total = 0;
-      plants.forEach(p => total += (p.valor * p.cantidad) / 1440);
-      return total;
-    }
-    function produccionPorDia() {
-      let total = 0;
-      plants.forEach(p => total += p.valor * p.cantidad);
-      return total;
-    }
-    function actualizarBarraProduccion() {
-      const ahora = Date.now();
-      const tiempoPasado = Math.max(0, ahora - lastRecolectado);
-      const progreso = Math.min(1, tiempoPasado / periodoRecolecta);
-      document.getElementById("barraProduccion").style.width = (progreso * 100) + "%";
-      let tiempoRestante = periodoRecolecta - tiempoPasado;
-      if (tiempoRestante < 0) tiempoRestante = 0;
-      document.getElementById("timerProduccion").innerText = msToHMS(tiempoRestante);
-      document.getElementById("btnRecolectar").disabled = progreso < 1 || produccionPorMinuto() === 0;
-    }
-    function msToHMS(ms) {
-      let total = Math.floor(ms / 1000);
-      const h = String(Math.floor(total / 3600)).padStart(2, "0");
-      total %= 3600;
-      const m = String(Math.floor(total / 60)).padStart(2, "0");
-      const s = String(total % 60).padStart(2, "0");
-      return `${h}:${m}:${s}`;
-    }
-    setInterval(actualizarBarraProduccion, 1000);
-    actualizarBarraProduccion();
-
-    document.getElementById("btnRecolectar").addEventListener("click", () => {
-      const ahora = Date.now();
-      let tiempoPasado = Math.max(0, ahora - lastRecolectado);
-      if (tiempoPasado > periodoRecolecta) tiempoPasado = periodoRecolecta;
-      const minutos = Math.floor(tiempoPasado / 60000);
-      let monedasRecoleccion = 0;
-      plants.forEach(p => {
-        monedasRecoleccion += (p.valor * p.cantidad) * (minutos / 1440);
-      });
-      monedasRecoleccion = Math.floor(monedasRecoleccion);
-      coins += monedasRecoleccion;
-      lastRecolectado = ahora;
-      guardarProgreso();
-      actualizarMonedas();
-      actualizarBarraProduccion();
-      animarRecoleccion(monedasRecoleccion);
-    });
-
-    function animarRecoleccion(monedas) {
-      const anim = document.getElementById("recoleccionAnimada");
-      anim.style.display = "block";
-      anim.innerHTML = `<img src="https://i.imgur.com/n9OyA2U.png" class="moneda-icon" style="width:40px;"><br>Felicidades<br>Obtuviste<br><b>${monedas}</b> de producción<br><small>¡Vuelve en 12 horas Granjero!</small>`;
-      setTimeout(() => { anim.style.display = "none"; }, 1500);
-    }
-
-    // ----------- Cofres -----------
-    const cofres = {
-      plata: { nombre: "Plata", img: "https://i.imgur.com/dYd1aoN.png", llaves: 10, btnTexto: "Abrir Cofre de Plata" },
-      oro: { nombre: "Oro", img: "https://i.imgur.com/HpkO9qJ.png", llaves: 50, btnTexto: "Abrir Cofre de Oro" },
-      diamante: { nombre: "Diamante", img: "https://i.imgur.com/HanPFOR.png", llaves: 100, btnTexto: "Abrir Cofre Diamante" }
-    };
-    let tipoCofreSeleccionado = "plata";
-    const probabilidades = {
-      plata: [ { rareza: "Legendaria", prob: 0.1 }, { rareza: "Épica", prob: 16 }, { rareza: "Rara", prob: 34 }, { rareza: "Común", prob: 49.9 } ],
-      oro: [ { rareza: "Legendaria", prob: 4 }, { rareza: "Épica", prob: 20 }, { rareza: "Rara", prob: 36 }, { rareza: "Común", prob: 40 } ],
-      diamante: [ { rareza: "Legendaria", prob: 8 }, { rareza: "Épica", prob: 32 }, { rareza: "Rara", prob: 32 }, { rareza: "Común", prob: 28 } ]
-    };
-
-    function actualizarCofreUI(tipo) {
-      const cofre = cofres[tipo];
-      document.getElementById("tituloCofre").innerText = `🎁 Cofre ${cofre.nombre}`;
-      document.getElementById("imgCofre").src = cofre.img;
-      document.getElementById("llavesNecesarias").innerText = cofre.llaves;
-      let gratis = cofresGratisDisponibles(tipo);
-      let infoExtra = gratis > 0 ? `<div style="color:#24c24c;font-weight:bold;">Te quedan ${gratis} cofres gratis para abrir</div>` : "";
-      document.getElementById("cofreInfo").innerHTML = `
-        Necesitas <span id="llavesNecesarias">${cofre.llaves}</span> llaves para abrir este cofre.<br>
-        <span class="cofre-keys">Tienes: <span id="userKeys">${keys}</span> llaves</span>
-        ${infoExtra}
-      `;
-      document.getElementById("abrirCofreBtn").innerText = cofre.btnTexto;
-      document.getElementById("abrirCofreBtn").disabled = (keys < cofre.llaves && gratis === 0);
-      document.getElementById("resultadoCofre").innerHTML = "";
-    }
-    function seleccionarTipoCofre(tipo) {
-      tipoCofreSeleccionado = tipo;
-      document.querySelectorAll("#cofreModal .tab-selector button").forEach(b => b.classList.remove('active'));
-      document.getElementById("tab" + tipo.charAt(0).toUpperCase() + tipo.slice(1)).classList.add("active");
-      actualizarCofreUI(tipo);
-    }
-    document.getElementById("botonCofre").addEventListener("click", () => {
-      document.getElementById("cofreModal").style.display = "flex";
-      seleccionarTipoCofre("plata");
-      actualizarLlaves();
-    });
-    document.getElementById("cerrarCofreBtn").addEventListener("click", () => document.getElementById("cofreModal").style.display = "none");
-    document.getElementById("cerrarCofreBtn2").addEventListener("click", () => document.getElementById("cofreModal").style.display = "none");
-    document.getElementById("tabPlata").addEventListener("click", () => seleccionarTipoCofre("plata"));
-    document.getElementById("tabOro").addEventListener("click", () => seleccionarTipoCofre("oro"));
-    document.getElementById("tabDiamante").addEventListener("click", () => seleccionarTipoCofre("diamante"));
-
-    function cofresGratisDisponibles(tipo) {
-      if (tipo === "plata") return cofresGratis.plata;
-      if (tipo === "oro") return cofresGratis.oro;
-      return 0;
-    }
-    document.getElementById("abrirCofreBtn").addEventListener("click", () => {
-      const tipo = tipoCofreSeleccionado;
-      const cofre = cofres[tipo];
-      let gratis = cofresGratisDisponibles(tipo);
-      if (gratis > 0) {
-        cofresGratis[tipo]--;
-        abrirCofre(tipo, true);
-      } else if (keys >= cofre.llaves) {
-        keys -= cofre.llaves;
-        abrirCofre(tipo, false);
-      }
-      guardarProgreso();
-      actualizarLlaves();
-      actualizarCofreUI(tipo);
-    });
-
-    function abrirCofre(tipo, esGratis) {
-      const imgCofre = document.getElementById("imgCofre");
-      imgCofre.classList.add("abierto");
-      setTimeout(() => {
-        imgCofre.classList.remove("abierto");
-        const resultado = calcularCofre(tipo);
-        mostrarResultadoCofre(resultado);
-        guardarProgreso();
-      }, 700);
-    }
-    function calcularCofre(tipo) {
-      const tabla = probabilidades[tipo];
-      const random = Math.random() * 100;
-      let acumulado = 0;
-      let rarezaElegida = "Común";
-      for (const p of tabla) {
-        acumulado += p.prob;
-        if (random <= acumulado) {
-          rarezaElegida = p.rareza;
-          break;
-        }
-      }
-      let posibles = plants.filter(p => p.rareza === rarezaElegida);
-      if (rarezaElegida === "Legendaria") {
-        posibles = [...posibles, ...posibles.filter(p=>p.nombre === "Piña dorada")];
-      }
-      const planta = posibles[Math.floor(Math.random() * posibles.length)];
-      return planta;
-    }
-    function mostrarResultadoCofre(planta) {
-      const resultado = document.getElementById("resultadoCofre");
-      resultado.innerHTML = `
-        <div style="display:flex; flex-direction:column; align-items:center;">
-          <img src="${planta.img}" alt="${planta.nombre}" style="width:90px; margin:12px 0; border-radius:12px;box-shadow:0 2px 12px #ffe66d99;">
-          <div style="font-size:1.15em; font-weight:bold; color:#3777ca;">
-            ¡Felicitaciones! Obtuviste<br>${planta.nombre}
-          </div>
+<body onload="cargarProgreso()">
+    <div class="container">
+        <h1>Xanderewa Clicker</h1>
+        
+        <!-- Contadores -->
+        <div class="contador">
+            Xanderewas: <span id="contador-xanderewa">0</span>
         </div>
-      `;
-      const encontrada = plants.find(p => p.nombre === planta.nombre);
-      if (encontrada) encontrada.cantidad++;
-      guardarProgreso();
-      mostrarInventario();
-    }
-
-    // ----------- INVENTARIO -----------
-    function mostrarInventario() {
-      const lista = document.getElementById("plantList");
-      lista.innerHTML = "";
-      let totalProd = 0;
-      plants.forEach((planta) => {
-        totalProd += planta.valor * planta.cantidad;
-        lista.innerHTML += `
-        <div class="plant">
-          <img src="${planta.img}" alt="${planta.nombre}">
-          <div class="plant-info">
-            <b>${planta.nombre}</b> 
-            <span style="color:#9b51e0;">[${planta.rareza}]</span><br>
-            Cantidad: <b>${planta.cantidad}</b>
-            <span class="production">+${planta.valor * planta.cantidad} monedas/día</span>
-          </div>
+        <div class="contador">
+            Farms: <span id="contador-farm">0</span>
         </div>
-        `;
-      });
-      if (totalProd === 0) {
-        lista.innerHTML = `<div style="color:#888;font-size:1.1em;margin:20px 0;">Aún no tienes cultivos.<br>¡Abre cofres para empezar!</div>`;
-      }
-    }
+        
+        <!-- Botones principales -->
+        <div class="botones">
+            <button onclick="sumarXanderewa()">Sumar Xanderewa</button>
+            <button onclick="sumarFarm()">Sumar Farm</button>
+            <button onclick="guardarProgreso()">Guardar Progreso</button>
+        </div>
+        
+        <!-- Misiones Semanales -->
+        <div class="seccion">
+            <h2>Misiones Semanales</h2>
+            <p class="proximamente">¡Próximamente se agregarán nuevas misiones!</p>
+        </div>
+        
+        <!-- Desafíos -->
+        <div class="seccion">
+            <h2>Desafíos</h2>
+            <p class="proximamente">¡Próximamente se agregarán desafíos emocionantes!</p>
+        </div>
+    </div>
 
-    // ----------- PERFIL Y RANGO -----------
-    function getRango(produccionDia) {
-      if (produccionDia >= 1000) return "Minero Excepcional";
-      if (produccionDia >= 600) return "Minero Gold";
-      if (produccionDia >= 300) return "Minero Experimentado";
-      if (produccionDia >= 100) return "Minero Plata";
-      return "Minero Principiante";
-    }
+    <script>
+        // Variables globales para los contadores (mejor práctica que acceder al DOM directamente)
+        let xanderewaCount = 0;
+        let farmCount = 0;
 
-    function actualizarPerfil() {
-      let prodDia = produccionPorDia();
-      document.getElementById("perfilRango").innerText = getRango(prodDia);
-      document.getElementById("perfilProduccion").innerText = prodDia;
-      document.getElementById("perfilCoins").innerText = coins;
-      document.getElementById("perfilKeys").innerText = keys;
-    }
+        // Obtener elementos del DOM una sola vez (optimización)
+        const contadorXanderewa = document.getElementById("contador-xanderewa");
+        const contadorFarm = document.getElementById("contador-farm");
 
-    // ----------- MODALES PERFIL, INVENTARIO, MISIONES, TIENDA -----------
-    document.getElementById("botonPerfil").addEventListener("click", () => {
-      actualizarPerfil();
-      document.getElementById("profileModal").style.display = "flex";
-    });
-    document.getElementById("cerrarPerfilBtn").addEventListener("click", () => document.getElementById("profileModal").style.display = "none");
-    document.getElementById("botonInventario").addEventListener("click", () => {
-      mostrarInventario();
-      document.getElementById("inventoryModal").style.display = "flex";
-    });
-    document.getElementById("cerrarInventarioBtn").addEventListener("click", () => document.getElementById("inventoryModal").style.display = "none");
-    document.getElementById("botonMisiones").addEventListener("click", () => {
-      mostrarMisiones("diarias");
-      document.getElementById("missionsModal").style.display = "flex";
-    });
-    document.getElementById("cerrarMisionesBtn").addEventListener("click", () => document.getElementById("missionsModal").style.display = "none");
-    document.getElementById("botonTienda").addEventListener("click", () => {
-      document.getElementById("shopModal").style.display = "flex";
-    });
-    document.getElementById("cerrarTiendaBtn").addEventListener("click", () => document.getElementById("shopModal").style.display = "none");
-
-    // ----------- MISIONES (igual que antes, puedes editar) -----------
-    const misiones = {
-      diarias: [
-        {
-          id: "abrirInventario",
-          nombre: "🎒 Abrí el Inventario",
-          requerimiento: 1,
-          recompensa: { monedas: 2 },
-          progreso: 0,
-          tipo: "evento",
-          evento: "inventario",
-          completada: false
-        }
-      ],
-      semanales: [],
-      desafio: []
-    };
-    function mostrarMisiones(tipo) {
-      document.querySelectorAll("#missionsModal .tab-selector button").forEach(btn => btn.classList.remove("active"));
-      document.getElementById("tab" + tipo.charAt(0).toUpperCase() + tipo.slice(1)).classList.add("active");
-
-      const contenedor = document.getElementById("misionesContenedor");
-      contenedor.innerHTML = "";
-
-      misiones[tipo].forEach(m => {
-        const bloque = document.createElement("div");
-        bloque.classList.add("mission");
-        let progresoTexto = `${m.progreso}/${m.requerimiento}`;
-        let btn = "";
-
-        if (m.completada) {
-          progresoTexto = "✔️ Completada";
-        } else if (m.progreso >= m.requerimiento) {
-          btn = `<button class="btn-reclamar" data-tipo="${tipo}" data-id="${m.id}">Reclamar</button>`;
+        // Función para sumar Xanderewas
+        function sumarXanderewa() {
+            xanderewaCount++;
+            contadorXanderewa.textContent = xanderewaCount;
+            guardarProgreso(); // Guarda automáticamente
         }
 
-        bloque.innerHTML = `
-          <strong>${m.nombre}</strong>
-          <small>Recompensa: ${m.recompensa.monedas} <img src="https://i.imgur.com/n9OyA2U.png" class="moneda-icon"></small>
-          <small>Progreso: ${progresoTexto}</small>
-          ${btn}
-        `;
-        contenedor.appendChild(bloque);
-      });
+        // Función para sumar Farms (ahora suma el valor actual de Xanderewas)
+        function sumarFarm() {
+            farmCount += xanderewaCount;
+            contadorFarm.textContent = farmCount;
+            guardarProgreso();
+        }
 
-      contenedor.querySelectorAll(".btn-reclamar").forEach(btn => {
-        btn.addEventListener("click", () => {
-          reclamarMision(btn.getAttribute("data-tipo"), btn.getAttribute("data-id"));
-        });
-      });
-    }
-    document.getElementById("tabDiarias").addEventListener("click", () => mostrarMisiones("diarias"));
-    document.getElementById("tabSemanales").addEventListener("click", () => mostrarMisiones("semanales"));
-    document.getElementById("tabDesafio").addEventListener("click", () => mostrarMisiones("desafio"));
+        // Función de guardado mejorada
+        function guardarProgreso() {
+            localStorage.setItem("xanderewa", xanderewaCount);
+            localStorage.setItem("farm", farmCount);
+        }
 
-    function reclamarMision(tipo, id) {
-      const m = misiones[tipo].find(x => x.id === id);
-      if (m && !m.completada && m.progreso >= m.requerimiento) {
-        m.completada = true;
-        coins += m.recompensa.monedas;
-        guardarProgreso();
-        actualizarMonedas();
-        mostrarMisiones(tipo);
-        alert(`¡Misión completada! Ganaste ${m.recompensa.monedas} monedas 🎉`);
-      }
-    }
+        // Función de carga con validaciones
+        function cargarProgreso() {
+            const savedXanderewa = localStorage.getItem("xanderewa");
+            const savedFarm = localStorage.getItem("farm");
 
-    // ----------- AUXILIARES -----------
-    function actualizarMonedas() {
-      document.getElementById("coins").innerText = coins;
-      document.getElementById("perfilCoins") && (document.getElementById("perfilCoins").innerText = coins);
-      guardarProgreso();
-    }
-    function actualizarLlaves() {
-      document.getElementById("keys").innerText = keys;
-      document.getElementById("userKeys").innerText = keys;
-      document.getElementById("perfilKeys") && (document.getElementById("perfilKeys").innerText = keys);
-      guardarProgreso();
-    }
-    actualizarMonedas();
-    actualizarLlaves();
-    mostrarInventario();
-  });
-  </script>
+            xanderewaCount = parseInt(savedXanderewa) || 0;
+            farmCount = parseInt(savedFarm) || 0;
+
+            contadorXanderewa.textContent = xanderewaCount;
+            contadorFarm.textContent = farmCount;
+        }
+
+        // Guardar automáticamente al cerrar la página
+        window.addEventListener('beforeunload', guardarProgreso);
+    </script>
 </body>
 </html>
