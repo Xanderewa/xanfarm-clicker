@@ -290,6 +290,36 @@
       vertical-align: middle;
       margin-right: 3px;
     }
+    /* Nuevos estilos para misiones */
+    .proximamente {
+      color: #888;
+      font-style: italic;
+      padding: 20px;
+      background: #f5f5f5;
+      border-radius: 8px;
+      margin: 15px 0;
+    }
+    .mission {
+      background: #f9f9f9;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 10px 0;
+      text-align: left;
+    }
+    .mission small {
+      display: block;
+      margin-top: 4px;
+      color: #666;
+    }
+    .btn-reclamar {
+      background: #4dd599;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      margin-top: 8px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -375,7 +405,9 @@
         <button id="tabSemanales">📅 Semanales</button>
         <button id="tabDesafio">💥 Desafíos</button>
       </div>
-      <div id="misionesContenedor"></div>
+      <div id="misionesContenedor">
+        <!-- Contenido dinámico según la pestaña seleccionada -->
+      </div>
     </div>
   </div>
 
@@ -411,6 +443,7 @@
         coins, keys, plants, cofresGratis, lastRecolectado
       }));
     }
+    
     function cargarProgreso() {
       const data = localStorage.getItem("xanfarm-progreso");
       if (!data) return false;
@@ -680,7 +713,7 @@
     });
     document.getElementById("cerrarTiendaBtn").addEventListener("click", () => document.getElementById("shopModal").style.display = "none");
 
-    // ----------- MISIONES (igual que antes, puedes editar) -----------
+    // ----------- MISIONES -----------
     const misiones = {
       diarias: [
         {
@@ -697,12 +730,23 @@
       semanales: [],
       desafio: []
     };
+
     function mostrarMisiones(tipo) {
       document.querySelectorAll("#missionsModal .tab-selector button").forEach(btn => btn.classList.remove("active"));
       document.getElementById("tab" + tipo.charAt(0).toUpperCase() + tipo.slice(1)).classList.add("active");
 
       const contenedor = document.getElementById("misionesContenedor");
       contenedor.innerHTML = "";
+
+      if (tipo === "semanales" || tipo === "desafio") {
+        contenedor.innerHTML = `
+          <div class="proximamente">
+            <h3>¡Próximamente!</h3>
+            <p>Se agregarán nuevas misiones ${tipo === "semanales" ? "semanales" : "de desafío"} en futuras actualizaciones.</p>
+          </div>
+        `;
+        return;
+      }
 
       misiones[tipo].forEach(m => {
         const bloque = document.createElement("div");
