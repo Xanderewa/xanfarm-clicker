@@ -4,25 +4,30 @@
   <meta charset="UTF-8">
   <title>XanFarm</title>
   <style>
-    body
-<!-- 🌲 Pantalla principal encantada -->
-<div id="pantallaPrincipal">
-  <div class="bienvenidaAnimada">
-    <h1>XanFarm</h1>
-    <p>🌿 Tocá para comenzar tu aventura mágica 🌿</p>
-  </div>
-  <button onclick="iniciarJuego()">Entrar al juego</button>
-</div>
-
-<!-- 🌾 Pantalla del juego real (se ocultará al inicio) -->
-<div id="pantallaJuego" style="display: none;">
-  <!-- Acá pegás el resto de tu juego: monedas, botones, cofres, etc. -->
-</div> {
+    body {
       font-family: sans-serif;
       text-align: center;
       margin: 0;
       padding-bottom: 160px;
       background-color: #fefae0;
+    }
+
+    /* Fondo de pantalla principal */
+    #pantallaPrincipal {
+      background-image: url("copilot_image_1751990499421.jpeg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      color: white;
+      padding: 20px;
+      z-index: 1;
+      position: relative;
     }
 
     .menu {
@@ -77,6 +82,7 @@
       max-height: 85vh;
       overflow-y: auto;
       box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      color: #222;
     }
 
     .close-btn {
@@ -143,6 +149,7 @@
       font-size: 13px;
       color: #555;
     }
+
     /* 🎁 Estilos del Modal de Cofres */
     #cofreModal .tab-selector {
       display: flex;
@@ -191,10 +198,13 @@
 </head>
 
 <body>
-  <h1>🌱 ¡Bienvenido a XanFarm!</h1>
-  <p>Monedas: <span id="coins">0</span></p>
+  <!-- Contenedor principal con fondo -->
+  <div id="pantallaPrincipal">
+    <h1>🌱 ¡Bienvenido a XanFarm!</h1>
+    <p>Monedas: <span id="coins">0</span></p>
+  </div>
 
-  <!-- Menú inferior -->
+  <!-- Menú inferior (fuera del fondo para que quede fijo sobre todo) -->
   <div class="menu">
     <button id="botonPerfil">🧑‍💻 Perfil</button>
     <button id="botonInventario">🎒 Inventario</button>
@@ -475,8 +485,7 @@
   };
 
   function seleccionarTipoCofre(tipo) {
-    tipoCofreSeleccionado = tipo;
-    document.getElementById('tituloCofre').innerText = `🎁 Cofre ${tipo.charAt(0).toUpperCase() + tipo.slice(1)}`;
+    tipoC)}`;
     document.querySelectorAll("#cofreModal .tab-selector button").forEach(b => b.classList.remove('active'));
     document.getElementById("tab" + tipo.charAt(0).toUpperCase() + tipo.slice(1)).classList.add("active");
 
@@ -540,10 +549,7 @@
     document.getElementById("cofreModal").style.display = "flex";
     seleccionarTipoCofre("plata");
   });
-function iniciarJuego() {
-  document.getElementById("pantallaPrincipal").style.display = "none";
-  document.getElementById("pantallaJuego").style.display = "block";
-}
+
   </script>
 </body>
 </html>
