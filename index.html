@@ -216,7 +216,357 @@
     <button>⚙️ Opciones</button>
   </div>
 
-  <!-- ...El resto de tu código JS y los modales van aquí igual que antes... -->
+  <div id="cofreModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="cerrarCofreBtn">×</span>
+      <h2 id="tituloCofre">🎁 Cofre Plata</h2>
+      <div class="tab-selector">
+        <button id="tabPlata" class="active">Plata</button>
+        <button id="tabOro">Oro</button>
+        <button id="tabDiamante">Diamante</button>
+      </div>
+      <div id="cofreVisual" style="cursor:pointer; font-size:64px; margin:20px 0;">🧰</div>
+      <div id="resultadoCofre"></div>
+      <button id="cerrarCofreBtn2">Cerrar</button>
+    </div>
+  </div>
 
+  <div id="profileModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="cerrarPerfilBtn">×</span>
+      <h2>🧑‍🌾 Tu Perfil</h2>
+      <p><strong>Nombre:</strong> Alexander</p>
+      <p><strong>Monedas:</strong> <span id="perfilCoins">0</span></p>
+      <p><strong>Mejoras:</strong> Ninguna</p>
+      <p><strong>Nivel:</strong> 1</p>
+    </div>
+  </div>
+
+  <div id="inventoryModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="cerrarInventarioBtn">×</span>
+      <h2>🎒 Inventario de Cultivos</h2>
+      <div id="plantList"></div>
+    </div>
+  </div>
+
+  <div id="missionsModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="cerrarMisionesBtn">×</span>
+      <h2>🧭 Misiones</h2>
+      <div class="tab-selector">
+        <button id="tabDiarias" class="active">🔄 Diarias</button>
+        <button id="tabSemanales">📅 Semanales</button>
+        <button id="tabDesafio">💥 Desafíos</button>
+      </div>
+      <div id="misionesContenedor"></div>
+    </div>
+  </div>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    let coins = 0;
+    document.getElementById("coins").innerText = coins;
+
+    const plants = [
+      { nombre: "Maíz dulce", valor: 2, cantidad: 3, rareza: "Común" },
+      { nombre: "Tomate solar", valor: 3, cantidad: 2, rareza: "Común" },
+      { nombre: "Frijol lunar", valor: 5, cantidad: 1, rareza: "Rara" },
+      { nombre: "Flor de cacao", valor: 8, cantidad: 1, rareza: "Épica" },
+      { nombre: "Uva eléctrica", valor: 12, cantidad: 0, rareza: "Legendaria" },
+      { nombre: "Zanahoria cristal", valor: 4, cantidad: 2, rareza: "Rara" },
+      { nombre: "Melón ámbar", valor: 10, cantidad: 1, rareza: "Épica" },
+      { nombre: "Trigo solar", valor: 1, cantidad: 4, rareza: "Común" },
+      { nombre: "Choclo místico", valor: 7, cantidad: 1, rareza: "Rara" },
+      { nombre: "Cereza de lava", valor: 15, cantidad: 0, rareza: "Legendaria" }
+    ];
+
+    const misiones = {
+      diarias: [
+        {
+          id: "cultivarZanahorias",
+          nombre: "🌿 Cultivar Zanahorias Cristal (3)",
+          requerimiento: 3,
+          recompensa: { monedas: 5 },
+          progreso: 0,
+          tipo: "planta",
+          planta: "Zanahoria cristal",
+          completada: false
+        },
+        {
+          id: "abrirInventario",
+          nombre: "🎒 Abrí el Inventario",
+          requerimiento: 1,
+          recompensa: { monedas: 2 },
+          progreso: 0,
+          tipo: "evento",
+          evento: "inventario",
+          completada: false
+        }
+      ],
+      semanales: [
+        {
+          id: "cultivarMaiz",
+          nombre: "🌽 Cultivar Maíz dulce (10)",
+          requerimiento: 10,
+          recompensa: { monedas: 10 },
+          progreso: 0,
+          tipo: "planta",
+          planta: "Maíz dulce",
+          completada: false
+        }
+      ],
+      desafio: [
+        {
+          id: "legendaria",
+          nombre: "💎 Cultivar planta legendaria (1)",
+          requerimiento: 1,
+          recompensa: { monedas: 20 },
+          progreso: 0,
+          tipo: "rareza",
+          rareza: "Legendaria",
+          completada: false
+        }
+      ]
+    };
+
+    function actualizarMonedas() {
+      document.getElementById("coins").innerText = coins;
+      document.getElementById("perfilCoins").innerText = coins;
+    }
+
+    // --- MODALES ---
+    const profileModal = document.getElementById("profileModal");
+    const inventoryModal = document.getElementById("inventoryModal");
+    const missionsModal = document.getElementById("missionsModal");
+    const cofreModal = document.getElementById("cofreModal");
+
+    document.getElementById("botonPerfil").addEventListener("click", () => {
+      profileModal.style.display = "flex";
+      actualizarMonedas();
+    });
+    document.getElementById("cerrarPerfilBtn").addEventListener("click", () => profileModal.style.display = "none");
+
+    document.getElementById("botonInventario").addEventListener("click", () => {
+      mostrarInventario();
+      inventoryModal.style.display = "flex";
+      registrarProgreso("inventario");
+    });
+    document.getElementById("cerrarInventarioBtn").addEventListener("click", () => inventoryModal.style.display = "none");
+
+    document.getElementById("botonMisiones").addEventListener("click", () => {
+      mostrarMisiones("diarias");
+      missionsModal.style.display = "flex";
+    });
+    document.getElementById("cerrarMisionesBtn").addEventListener("click", () => missionsModal.style.display = "none");
+
+    // Cofre Modal
+    document.getElementById("botonCofre").addEventListener("click", () => {
+      cofreModal.style.display = "flex";
+      seleccionarTipoCofre("plata");
+    });
+    document.getElementById("cerrarCofreBtn").addEventListener("click", () => cerrarCofre());
+    document.getElementById("cerrarCofreBtn2").addEventListener("click", () => cerrarCofre());
+
+    // Tab Selector Misiones
+    document.getElementById("tabDiarias").addEventListener("click", () => mostrarMisiones("diarias"));
+    document.getElementById("tabSemanales").addEventListener("click", () => mostrarMisiones("semanales"));
+    document.getElementById("tabDesafio").addEventListener("click", () => mostrarMisiones("desafio"));
+
+    // Tab Selector Cofre
+    document.getElementById("tabPlata").addEventListener("click", () => seleccionarTipoCofre("plata"));
+    document.getElementById("tabOro").addEventListener("click", () => seleccionarTipoCofre("oro"));
+    document.getElementById("tabDiamante").addEventListener("click", () => seleccionarTipoCofre("diamante"));
+
+    function cerrarCofre() {
+      cofreModal.style.display = "none";
+      document.getElementById("resultadoCofre").innerHTML = "";
+    }
+
+    function mostrarInventario() {
+      const lista = document.getElementById("plantList");
+      lista.innerHTML = "";
+      plants.forEach((planta, index) => {
+        const item = document.createElement("div");
+        item.classList.add("plant");
+        item.innerHTML = `
+          <strong>${planta.nombre}</strong> (${planta.rareza})<br>
+          Valor: +${planta.valor} 💰<br>
+          Cantidad: ${planta.cantidad}
+          ${planta.cantidad > 0 ? `<button class="btn-cultivar" data-index="${index}">Cultivar</button>` : ""}
+        `;
+        lista.appendChild(item);
+      });
+      // Delegación de eventos para los botones "Cultivar"
+      lista.querySelectorAll(".btn-cultivar").forEach(btn => {
+        btn.addEventListener("click", e => {
+          const idx = parseInt(btn.getAttribute("data-index"));
+          cultivar(idx);
+        });
+      });
+    }
+
+    function cultivar(index) {
+      const planta = plants[index];
+      if (planta.cantidad > 0) {
+        coins += planta.valor;
+        planta.cantidad--;
+        registrarCultivo(planta.nombre, planta.rareza);
+        actualizarMonedas();
+        mostrarInventario();
+      }
+    }
+
+    function mostrarMisiones(tipo) {
+      document.querySelectorAll("#missionsModal .tab-selector button").forEach(btn => btn.classList.remove("active"));
+      document.getElementById("tab" + tipo.charAt(0).toUpperCase() + tipo.slice(1)).classList.add("active");
+
+      const contenedor = document.getElementById("misionesContenedor");
+      contenedor.innerHTML = "";
+
+      misiones[tipo].forEach(m => {
+        const bloque = document.createElement("div");
+        bloque.classList.add("mission");
+        let progresoTexto = `${m.progreso}/${m.requerimiento}`;
+        let btn = "";
+
+        if (m.completada) {
+          progresoTexto = "✔️ Completada";
+        } else if (m.progreso >= m.requerimiento) {
+          btn = `<button class="btn-reclamar" data-tipo="${tipo}" data-id="${m.id}">Reclamar</button>`;
+        }
+
+        bloque.innerHTML = `
+          <strong>${m.nombre}</strong>
+          <small>Recompensa: ${m.recompensa.monedas} 💰</small>
+          <small>Progreso: ${progresoTexto}</small>
+          ${btn}
+        `;
+        contenedor.appendChild(bloque);
+      });
+
+      // Delegación de eventos para botones "Reclamar"
+      contenedor.querySelectorAll(".btn-reclamar").forEach(btn => {
+        btn.addEventListener("click", () => {
+          reclamarMision(btn.getAttribute("data-tipo"), btn.getAttribute("data-id"));
+        });
+      });
+    }
+
+    function registrarCultivo(nombre, rareza) {
+      Object.values(misiones).flat().forEach(m => {
+        if (m.completada) return;
+        if (m.tipo === "planta" && m.planta === nombre) m.progreso++;
+        if (m.tipo === "rareza" && m.rareza === rareza) m.progreso++;
+      });
+    }
+
+    function registrarProgreso(evento) {
+      Object.values(misiones).flat().forEach(m => {
+        if (m.tipo === "evento" && m.evento === evento && !m.completada) {
+          m.progreso++;
+        }
+      });
+    }
+
+    function reclamarMision(tipo, id) {
+      const m = misiones[tipo].find(x => x.id === id);
+      if (m && !m.completada && m.progreso >= m.requerimiento) {
+        m.completada = true;
+        coins += m.recompensa.monedas;
+        actualizarMonedas();
+        mostrarMisiones(tipo);
+        alert(`¡Misión completada! Ganaste ${m.recompensa.monedas} monedas 🎉`);
+      }
+    }
+
+    // Cofres
+    let tipoCofreSeleccionado = 'plata';
+    let contadorDiamantes = 0;
+
+    const probabilidades = {
+      plata: [
+        { rareza: "Legendaria", prob: 7 },
+        { rareza: "Épica", prob: 14 },
+        { rareza: "Rara", prob: 36 },
+        { rareza: "Común", prob: 43 }
+      ],
+      oro: [
+        { rareza: "Legendaria", prob: 12 },
+        { rareza: "Épica", prob: 22 },
+        { rareza: "Rara", prob: 36 },
+        { rareza: "Común", prob: 30 }
+      ],
+      diamante: [
+        { rareza: "Legendaria", prob: 22 },
+        { rareza: "Épica", prob: 34 },
+        { rareza: "Rara", prob: 28 },
+        { rareza: "Común", prob: 16 }
+      ]
+    };
+
+    function seleccionarTipoCofre(tipo) {
+      tipoCofreSeleccionado = tipo;
+      document.getElementById('tituloCofre').innerText = `🎁 Cofre ${tipo.charAt(0).toUpperCase() + tipo.slice(1)}`;
+      document.querySelectorAll("#cofreModal .tab-selector button").forEach(b => b.classList.remove('active'));
+      document.getElementById("tab" + tipo.charAt(0).toUpperCase() + tipo.slice(1)).classList.add("active");
+
+      cofreModal.classList.remove("plata", "oro", "diamante");
+      cofreModal.classList.add(tipo);
+    }
+
+    document.getElementById("cofreVisual").addEventListener("click", () => abrirCofre());
+
+    function abrirCofre() {
+      const cofreVisual = document.getElementById("cofreVisual");
+      cofreVisual.classList.add("abierto");
+
+      setTimeout(() => {
+        const resultado = calcularCofre(tipoCofreSeleccionado);
+        mostrarResultadoCofre(resultado);
+        cofreVisual.classList.remove("abierto");
+      }, 800);
+    }
+
+    function calcularCofre(tipo) {
+      if (tipo === "diamante") {
+        contadorDiamantes++;
+        if (contadorDiamantes % 5 === 0) {
+          const epicas = plants.filter(p => p.rareza === "Épica");
+          return epicas[Math.floor(Math.random() * epicas.length)];
+        }
+      }
+
+      const tabla = probabilidades[tipo];
+      const random = Math.random() * 100;
+      let acumulado = 0;
+      let rarezaElegida = "Común";
+
+      for (const p of tabla) {
+        acumulado += p.prob;
+        if (random <= acumulado) {
+          rarezaElegida = p.rareza;
+          break;
+        }
+      }
+
+      const posibles = plants.filter(p => p.rareza === rarezaElegida);
+      const planta = posibles[Math.floor(Math.random() * posibles.length)];
+      return planta;
+    }
+
+    function mostrarResultadoCofre(planta) {
+      const resultado = document.getElementById("resultadoCofre");
+      resultado.innerHTML = `
+        <p>🌱 ¡Obtuviste <strong>${planta.nombre}</strong> (${planta.rareza})!</p>
+      `;
+
+      const encontrada = plants.find(p => p.nombre === planta.nombre);
+      if (encontrada) encontrada.cantidad++;
+
+      mostrarInventario();
+    }
+  });
+  </script>
 </body>
 </html>
