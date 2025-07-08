@@ -306,6 +306,10 @@ function cerrarInventario() {
 function cerrarMisiones() {
   document.getElementById("missionsModal").style.display = "none";
 }
+function cerrarCofre() {
+  document.getElementById("cofreModal").style.display = "none";
+  document.getElementById("resultadoCofre").innerHTML = "";
+}
 
 // 👤 PERFIL
 document.getElementById("botonPerfil").addEventListener("click", () => {
@@ -412,26 +416,7 @@ function reclamarMision(tipo, id) {
     alert(`¡Misión completada! Ganaste ${m.recompensa.monedas} monedas 🎉`);
   }
 }
-<!-- Modal de Cofres -->
-<div id="cofreModal" class="modal">
-  <div class="modal-content" id="cofreContenido">
-    <span class="close-btn" onclick="cerrarCofre()">×</span>
-    <h2 id="tituloCofre">🎁 Cofre</h2>
 
-    <div class="tab-selector">
-      <button id="tabPlata" class="active" onclick="seleccionarTipoCofre('plata')">⚪ Plata</button>
-      <button id="tabOro" onclick="seleccionarTipoCofre('oro')">🟡 Oro</button>
-      <button id="tabDiamante" onclick="seleccionarTipoCofre('diamante')">🔷 Diamante</button>
-    </div>
-
-    <div style="text-align: center; margin-top: 20px;">
-      <div id="cofreVisual" style="font-size: 60px;">📦</div>
-      <button onclick="abrirCofre()" style="margin-top: 15px; padding: 10px 20px; font-size: 16px;">Abrir Cofre</button>
-    </div>
-
-    <div id="resultadoCofre" style="margin-top: 20px;"></div>
-  </div>
-</div>
 // 🎁 COFRES
 let tipoCofreSeleccionado = 'plata';
 let contadorDiamantes = 0;
@@ -463,7 +448,6 @@ function seleccionarTipoCofre(tipo) {
   document.querySelectorAll("#cofreModal .tab-selector button").forEach(b => b.classList.remove('active'));
   document.getElementById("tab" + tipo.charAt(0).toUpperCase() + tipo.slice(1)).classList.add("active");
 
-  // Cambiar fondo del modal visual
   const modal = document.getElementById("cofreModal");
   modal.classList.remove("plata", "oro", "diamante");
   modal.classList.add(tipo);
@@ -513,21 +497,15 @@ function mostrarResultadoCofre(planta) {
     <p>🌱 ¡Obtuviste <strong>${planta.nombre}</strong> (${planta.rareza})!</p>
   `;
 
-  // Agregar al inventario
   const encontrada = plants.find(p => p.nombre === planta.nombre);
   if (encontrada) encontrada.cantidad++;
 
-  mostrarInventario(); // Opcional: actualizar inventario si está abierto
+  mostrarInventario();
 }
-  
-// 🔓 Abrir el modal de Cofre
-document.querySelector(".menu button:nth-child(3)").addEventListener("click", () => {
+
+// Abrir modal de Cofre
+document.getElementById("botonCofre").addEventListener("click", () => {
   document.getElementById("cofreModal").style.display = "flex";
   seleccionarTipoCofre("plata");
 });
-
-function cerrarCofre() {
-  document.getElementById("cofreModal").style.display = "none";
-  document.getElementById("resultadoCofre").innerHTML = "";
-}
 </script>
