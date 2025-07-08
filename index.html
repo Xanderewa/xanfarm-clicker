@@ -82,20 +82,24 @@
   <p>Monedas: <span id="coins">0</span></p>
   <button onclick="plant()">🌾 Plantar</button>
   <script>
-    let coins = 0;
-    function plant() // Al hacer clic en el botón "🧑‍🌾 Perfil"
-document.querySelectorAll('.menu button')[0].addEventListener('click', function () {
-  document.getElementById('perfilCoins').innerText = coins;
-  document.getElementById('profileModal').style.display = 'flex';
-});
+  let coins = 0;
 
-// Función para cerrar la ventana de perfil
-function cerrarPerfil() {
-  document.getElementById('profileModal').style.display = 'none';
-}{
-      coins++;
-      document.getElementById('coins').innerText = coins;
-    }
+  // Función para plantar y sumar monedas
+  function plant() {
+    coins++;
+    document.getElementById('coins').innerText = coins;
+  }
+
+  // Al hacer clic en el botón "🧑‍🌾 Perfil"
+  document.querySelectorAll('.menu button')[0].addEventListener('click', function () {
+    document.getElementById('perfilCoins').innerText = coins;
+    document.getElementById('profileModal').style.display = 'flex';
+  });
+
+  // Función para cerrar la ventana de perfil
+  function cerrarPerfil() {
+    document.getElementById('profileModal').style.display = 'none';
+  }
   </script>
 <div class="menu">
   <button>🧑‍🌾 Perfil</button>
