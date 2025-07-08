@@ -91,7 +91,7 @@
   }
 
   // Al hacer clic en el botón "🧑‍🌾 Perfil"
-  document.querySelectorAll('.menu button')[0].addEventListener('click', function () {
+  document.getElementById('botonPerfil').addEventListener('click', function ()  {
     document.getElementById('perfilCoins').innerText = coins;
     document.getElementById('profileModal').style.display = 'flex';
   });
@@ -102,7 +102,7 @@
   }
   </script>
 <div class="menu">
-  <button>🧑‍🌾 Perfil</button>
+  <button id="botonPerfil">🧑‍🌾 Perfil</button>
   <button>🛒 Tienda</button>
   <button>🎁 Cofre</button>
   <button>🌱 Plantar</button>
