@@ -4,7 +4,20 @@
   <meta charset="UTF-8">
   <title>XanFarm</title>
   <style>
-    body {
+    body
+<!-- 🌲 Pantalla principal encantada -->
+<div id="pantallaPrincipal">
+  <div class="bienvenidaAnimada">
+    <h1>XanFarm</h1>
+    <p>🌿 Tocá para comenzar tu aventura mágica 🌿</p>
+  </div>
+  <button onclick="iniciarJuego()">Entrar al juego</button>
+</div>
+
+<!-- 🌾 Pantalla del juego real (se ocultará al inicio) -->
+<div id="pantallaJuego" style="display: none;">
+  <!-- Acá pegás el resto de tu juego: monedas, botones, cofres, etc. -->
+</div> {
       font-family: sans-serif;
       text-align: center;
       margin: 0;
@@ -527,7 +540,10 @@
     document.getElementById("cofreModal").style.display = "flex";
     seleccionarTipoCofre("plata");
   });
-
+function iniciarJuego() {
+  document.getElementById("pantallaPrincipal").style.display = "none";
+  document.getElementById("pantallaJuego").style.display = "block";
+}
   </script>
 </body>
 </html>
