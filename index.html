@@ -130,6 +130,50 @@
       font-size: 13px;
       color: #555;
     }
+/* 🎁 Estilos del Modal de Cofres */
+#cofreModal .tab-selector {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+#cofreModal .tab-selector button {
+  margin: 4px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  background: #eee;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#cofreModal .tab-selector .active {
+  background: #6a994e;
+  color: white;
+}
+
+/* 🔲 Estilo del visual del cofre */
+#cofreVisual {
+  font-size: 64px;
+  transition: transform 0.2s ease;
+}
+
+#cofreVisual.abierto {
+  transform: scale(1.2) rotate(-5deg);
+}
+
+/* 🌅 Fondos personalizados por tipo de cofre (para más adelante) */
+#cofreModal.plata {
+  background: linear-gradient(to bottom, #eef3f9, #d0d0d0);
+}
+
+#cofreModal.oro {
+  background: linear-gradient(to bottom, #fef6e0, #e2c97b);
+}
+
+#cofreModal.diamante {
+  background: linear-gradient(to bottom, #edf4ff, #cfe5ff);
+}
   </style>
 </head>
 
@@ -367,5 +411,123 @@ function reclamarMision(tipo, id) {
     mostrarMisiones(tipo);
     alert(`¡Misión completada! Ganaste ${m.recompensa.monedas} monedas 🎉`);
   }
+}
+<!-- Modal de Cofres -->
+<div id="cofreModal" class="modal">
+  <div class="modal-content" id="cofreContenido">
+    <span class="close-btn" onclick="cerrarCofre()">×</span>
+    <h2 id="tituloCofre">🎁 Cofre</h2>
+
+    <div class="tab-selector">
+      <button id="tabPlata" class="active" onclick="seleccionarTipoCofre('plata')">⚪ Plata</button>
+      <button id="tabOro" onclick="seleccionarTipoCofre('oro')">🟡 Oro</button>
+      <button id="tabDiamante" onclick="seleccionarTipoCofre('diamante')">🔷 Diamante</button>
+    </div>
+
+    <div style="text-align: center; margin-top: 20px;">
+      <div id="cofreVisual" style="font-size: 60px;">📦</div>
+      <button onclick="abrirCofre()" style="margin-top: 15px; padding: 10px 20px; font-size: 16px;">Abrir Cofre</button>
+    </div>
+
+    <div id="resultadoCofre" style="margin-top: 20px;"></div>
+  </div>
+</div>
+// 🎁 COFRES
+let tipoCofreSeleccionado = 'plata';
+let contadorDiamantes = 0;
+
+const probabilidades = {
+  plata: [
+    { rareza: "Legendaria", prob: 7 },
+    { rareza: "Épica", prob: 14 },
+    { rareza: "Rara", prob: 36 },
+    { rareza: "Común", prob: 43 }
+  ],
+  oro: [
+    { rareza: "Legendaria", prob: 12 },
+    { rareza: "Épica", prob: 22 },
+    { rareza: "Rara", prob: 36 },
+    { rareza: "Común", prob: 30 }
+  ],
+  diamante: [
+    { rareza: "Legendaria", prob: 22 },
+    { rareza: "Épica", prob: 34 },
+    { rareza: "Rara", prob: 28 },
+    { rareza: "Común", prob: 16 }
+  ]
+};
+
+function seleccionarTipoCofre(tipo) {
+  tipoCofreSeleccionado = tipo;
+  document.getElementById('tituloCofre').innerText = `🎁 Cofre ${tipo.charAt(0).toUpperCase() + tipo.slice(1)}`;
+  document.querySelectorAll("#cofreModal .tab-selector button").forEach(b => b.classList.remove('active'));
+  document.getElementById("tab" + tipo.charAt(0).toUpperCase() + tipo.slice(1)).classList.add("active");
+
+  // Cambiar fondo del modal visual
+  const modal = document.getElementById("cofreModal");
+  modal.classList.remove("plata", "oro", "diamante");
+  modal.classList.add(tipo);
+}
+
+function abrirCofre() {
+  const cofreVisual = document.getElementById("cofreVisual");
+  cofreVisual.classList.add("abierto");
+
+  setTimeout(() => {
+    const resultado = calcularCofre(tipoCofreSeleccionado);
+    mostrarResultadoCofre(resultado);
+    cofreVisual.classList.remove("abierto");
+  }, 800);
+}
+
+function calcularCofre(tipo) {
+  if (tipo === "diamante") {
+    contadorDiamantes++;
+    if (contadorDiamantes % 5 === 0) {
+      const epicas = plants.filter(p => p.rareza === "Épica");
+      return epicas[Math.floor(Math.random() * epicas.length)];
+    }
+  }
+
+  const tabla = probabilidades[tipo];
+  const random = Math.random() * 100;
+  let acumulado = 0;
+  let rarezaElegida = "Común";
+
+  for (const p of tabla) {
+    acumulado += p.prob;
+    if (random <= acumulado) {
+      rarezaElegida = p.rareza;
+      break;
+    }
+  }
+
+  const posibles = plants.filter(p => p.rareza === rarezaElegida);
+  const planta = posibles[Math.floor(Math.random() * posibles.length)];
+  return planta;
+}
+
+function mostrarResultadoCofre(planta) {
+  const resultado = document.getElementById("resultadoCofre");
+  resultado.innerHTML = `
+    <p>🌱 ¡Obtuviste <strong>${planta.nombre}</strong> (${planta.rareza})!</p>
+  `;
+
+  // Agregar al inventario
+  const encontrada = plants.find(p => p.nombre === planta.nombre);
+  if (encontrada) encontrada.cantidad++;
+
+  mostrarInventario(); // Opcional: actualizar inventario si está abierto
+}
+  
+// 🔓 Abrir el modal de Cofre
+document.querySelector(".menu button:nth-child(3)").addEventListener("click", () => {
+  document.getElementById("cofreModal").style.display = "flex";
+  seleccionarTipoCofre("plata");
+});
+
+function cerrarCofre() {
+  document.getElementById("cofreModal").style.display = "none";
+  document.getElementById("resultadoCofre").innerHTML = "";
 }
 </script>
