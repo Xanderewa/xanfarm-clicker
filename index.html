@@ -3,13 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <title>XanFarm</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden; /* Quita el scroll */
+    }
     body {
       font-family: sans-serif;
       text-align: center;
-      margin: 0;
-      padding-bottom: 160px;
       background-color: #fefae0;
+      height: 100%;
+      width: 100vw;
+      overscroll-behavior: contain; /* Previene scroll elástico en móvil */
     }
     #pantallaPrincipal {
       background-image: url("https://i.imgur.com/qbJMnhv.png");
@@ -18,32 +26,29 @@
       background-repeat: no-repeat;
       background-attachment: fixed;
       min-height: 100vh;
+      min-width: 100vw;
+      height: 100vh;
+      width: 100vw;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
       color: white;
-      padding: 20px;
+      padding: 20px 0 0 0;
       z-index: 1;
       position: relative;
-    }
-    .banner-img {
-      max-width: 90vw;
-      max-height: 35vh;
-      border-radius: 16px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-      border: 3px solid #fff3;
+      box-sizing: border-box;
     }
     .menu {
       position: fixed;
       bottom: 0;
-      width: 100%;
+      left: 0;
+      width: 100vw;
       background: #fff;
       display: flex;
       flex-wrap: wrap;
       justify-content: space-around;
-      padding: 10px;
+      padding: 10px 0;
       box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
       z-index: 999;
     }
@@ -65,8 +70,8 @@
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
       background-color: rgba(0,0,0,0.4);
       display: none;
       justify-content: center;
@@ -180,7 +185,6 @@
 </head>
 <body>
   <div id="pantallaPrincipal">
-    <img src="https://i.imgur.com/qbJMnhv.png" alt="Principal XanFarm" class="banner-img">
     <h1>🌱 ¡Bienvenido a XanFarm!</h1>
     <p>Monedas: <span id="coins">0</span></p>
   </div>
