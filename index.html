@@ -221,8 +221,9 @@
     #contadorProduccion {
       font-weight: bold;
       margin-bottom: 8px;
-      color: #333;
       font-size: 1.07em;
+      color: #13314e;
+      text-shadow: 0 1px 5px #fff, 0 1px 6px #13314e22;
     }
     #btnRecolectar {
       margin: 10px auto 0 auto;
@@ -284,6 +285,11 @@
       60% { opacity:1; transform: translate(-50%,-28px) scale(1.07);}
       100% { opacity:0; transform: translate(-50%,0) scale(0.7);}
     }
+    .moneda-icon {
+      width: 20px;
+      vertical-align: middle;
+      margin-right: 3px;
+    }
   </style>
 </head>
 <body>
@@ -291,13 +297,16 @@
   <div id="pantallaPrincipal">
     <h1>🌱 ¡Bienvenido a XanFarm!</h1>
     <div class="moneda-bar">
-      <span>💰 Monedas: <span id="coins">0</span></span>
+      <span>
+        <img src="https://i.imgur.com/n9OyA2U.png" class="moneda-icon" alt="Moneda">
+        Monedas: <span id="coins">0</span>
+      </span>
       <span>🔑 Llaves: <span id="keys">0</span></span>
     </div>
     <div id="progresoProduccion">
       <div id="barraProduccion"></div>
     </div>
-    <div id="contadorProduccion">Producción lista en: <span id="timerProduccion">--:--:--</span></div>
+    <div id="contadorProduccion"><b>Producción lista en:</b> <span id="timerProduccion">--:--:--</span></div>
     <button id="btnRecolectar" disabled>
       <img id="granjeroAnim" src="https://i.imgur.com/bCqQ3gO.gif" alt="Granjero corriendo" style="background:#eee;">
       Recolectar producción
@@ -339,10 +348,10 @@
     <div class="modal-content">
       <span class="close-btn" id="cerrarPerfilBtn">×</span>
       <h2>🧑‍🌾 Tu Perfil</h2>
-      <p><strong>Nombre:</strong> Alexander</p>
+      <p><strong>Rango:</strong> <span id="perfilRango"></span></p>
+      <p><strong>Producción diaria:</strong> <span id="perfilProduccion"></span> monedas/día</p>
       <p><strong>Monedas:</strong> <span id="perfilCoins">0</span></p>
       <p><strong>Llaves:</strong> <span id="perfilKeys">0</span></p>
-      <p><strong>Mejoras:</strong> Ninguna</p>
       <p><strong>Nivel:</strong> 1</p>
     </div>
   </div>
@@ -381,120 +390,85 @@
 
   <script>
   document.addEventListener("DOMContentLoaded", () => {
-    let coins = 0;
-    let keys = 20;
-    document.getElementById("coins").innerText = coins;
-    document.getElementById("keys").innerText = keys;
-
-    // Cultivos con rareza y producción diaria
-    const plants = [
-      {
-        nombre: "Piña dorada",
-        valor: 500, // monedas/día
-        cantidad: 0,
-        rareza: "Legendaria",
-        img: "https://i.imgur.com/2w6r5Wv.png"
-      },
-      {
-        nombre: "Uva eléctrica",
-        valor: 350,
-        cantidad: 0,
-        rareza: "Legendaria",
-        img: "https://i.imgur.com/8uHi4ca.png"
-      },
-      {
-        nombre: "Cereza de lava",
-        valor: 350,
-        cantidad: 0,
-        rareza: "Legendaria",
-        img: "https://i.imgur.com/KfL5jvQ.png"
-      },
-      {
-        nombre: "Flor de cacao",
-        valor: 180,
-        cantidad: 1,
-        rareza: "Épica",
-        img: "https://i.imgur.com/zq0Qp8m.png"
-      },
-      {
-        nombre: "Melón ámbar",
-        valor: 180,
-        cantidad: 1,
-        rareza: "Épica",
-        img: "https://i.imgur.com/4z6jxtM.png"
-      },
-      {
-        nombre: "Frijol lunar",
-        valor: 70,
-        cantidad: 1,
-        rareza: "Rara",
-        img: "https://i.imgur.com/Cv6oKfK.png"
-      },
-      {
-        nombre: "Zanahoria cristal",
-        valor: 70,
-        cantidad: 2,
-        rareza: "Rara",
-        img: "https://i.imgur.com/nW6w9p6.png"
-      },
-      {
-        nombre: "Choclo místico",
-        valor: 70,
-        cantidad: 1,
-        rareza: "Rara",
-        img: "https://i.imgur.com/ram9D6B.png"
-      },
-      {
-        nombre: "Maíz dulce",
-        valor: 30,
-        cantidad: 3,
-        rareza: "Común",
-        img: "https://i.imgur.com/0JXJt1N.png"
-      },
-      {
-        nombre: "Tomate solar",
-        valor: 30,
-        cantidad: 2,
-        rareza: "Común",
-        img: "https://i.imgur.com/5e4N6mK.png"
-      },
-      {
-        nombre: "Trigo solar",
-        valor: 30,
-        cantidad: 4,
-        rareza: "Común",
-        img: "https://i.imgur.com/Va8E9kE.png"
-      }
+    // ---------- DATOS POR DEFECTO ----------
+    const PLANTS_DEFAULT = [
+      { nombre: "Piña dorada", valor: 500, cantidad: 0, rareza: "Legendaria", img: "https://i.imgur.com/2w6r5Wv.png" },
+      { nombre: "Uva eléctrica", valor: 350, cantidad: 0, rareza: "Legendaria", img: "https://i.imgur.com/8uHi4ca.png" },
+      { nombre: "Cereza de lava", valor: 350, cantidad: 0, rareza: "Legendaria", img: "https://i.imgur.com/KfL5jvQ.png" },
+      { nombre: "Flor de cacao", valor: 180, cantidad: 0, rareza: "Épica", img: "https://i.imgur.com/zq0Qp8m.png" },
+      { nombre: "Melón ámbar", valor: 180, cantidad: 0, rareza: "Épica", img: "https://i.imgur.com/4z6jxtM.png" },
+      { nombre: "Frijol lunar", valor: 70, cantidad: 0, rareza: "Rara", img: "https://i.imgur.com/Cv6oKfK.png" },
+      { nombre: "Zanahoria cristal", valor: 70, cantidad: 0, rareza: "Rara", img: "https://i.imgur.com/nW6w9p6.png" },
+      { nombre: "Choclo místico", valor: 70, cantidad: 0, rareza: "Rara", img: "https://i.imgur.com/ram9D6B.png" },
+      { nombre: "Maíz dulce", valor: 30, cantidad: 0, rareza: "Común", img: "https://i.imgur.com/0JXJt1N.png" },
+      { nombre: "Tomate solar", valor: 30, cantidad: 0, rareza: "Común", img: "https://i.imgur.com/5e4N6mK.png" },
+      { nombre: "Trigo solar", valor: 30, cantidad: 0, rareza: "Común", img: "https://i.imgur.com/Va8E9kE.png" }
     ];
 
-    // ----------- SISTEMA DE PRODUCCIÓN AUTOMÁTICA -----------
-    // Guardar en localStorage para persistir entre recargas
-    let lastRecolectado = parseInt(localStorage.getItem("xanfarm-lastRecolectado") || 0);
-    if (!lastRecolectado) lastRecolectado = Date.now();
+    // ---------- CARGA Y GUARDADO ----------
+    function guardarProgreso() {
+      localStorage.setItem("xanfarm-progreso", JSON.stringify({
+        coins, keys, plants, cofresGratis, lastRecolectado
+      }));
+    }
+    function cargarProgreso() {
+      const data = localStorage.getItem("xanfarm-progreso");
+      if (!data) return false;
+      try {
+        const obj = JSON.parse(data);
+        coins = obj.coins ?? 0;
+        keys = obj.keys ?? 0;
+        plants = obj.plants ?? JSON.parse(JSON.stringify(PLANTS_DEFAULT));
+        cofresGratis = obj.cofresGratis ?? { oro: 0, plata: 0 };
+        lastRecolectado = obj.lastRecolectado ?? Date.now();
+        return true;
+      } catch { return false; }
+    }
 
-    // Cada cuánto se puede recolectar (en ms)
+    // ---------- VARIABLES DEL JUEGO ----------
+    let coins = 0, keys = 0;
+    let plants = JSON.parse(JSON.stringify(PLANTS_DEFAULT));
+    let cofresGratis = { oro: 0, plata: 0 };
+    let lastRecolectado = Date.now();
+
+    // ---------- BONO DE BIENVENIDA ----------
+    let yaRecibioBono = localStorage.getItem("xanfarm-yaRecibioBono") === "1";
+    if (!cargarProgreso()) {
+      coins = 0;
+      keys = 0;
+      plants = JSON.parse(JSON.stringify(PLANTS_DEFAULT));
+      plants.forEach(p => p.cantidad = 0);
+      cofresGratis = { oro: 1, plata: 3 };
+      lastRecolectado = Date.now();
+      guardarProgreso();
+    }
+    if (!yaRecibioBono) {
+      cofresGratis = { oro: 1, plata: 3 };
+      localStorage.setItem("xanfarm-yaRecibioBono", "1");
+      guardarProgreso();
+    }
+
+    // ----------- SISTEMA DE PRODUCCIÓN AUTOMÁTICA -----------
     const periodoRecolecta = 12 * 60 * 60 * 1000; // 12 horas
-    const produccionPorMinuto = () => {
+    function produccionPorMinuto() {
       let total = 0;
-      plants.forEach(p => total += (p.valor * p.cantidad) / 1440); // 1440 min/día
+      plants.forEach(p => total += (p.valor * p.cantidad) / 1440);
       return total;
-    };
-    const produccionMaxima = () => {
+    }
+    function produccionPorDia() {
       let total = 0;
       plants.forEach(p => total += p.valor * p.cantidad);
-      return total * 0.5; // 12h de producción máxima (1/2 día)
-    };
-
+      return total;
+    }
     function actualizarBarraProduccion() {
       const ahora = Date.now();
       const tiempoPasado = Math.max(0, ahora - lastRecolectado);
       const progreso = Math.min(1, tiempoPasado / periodoRecolecta);
       document.getElementById("barraProduccion").style.width = (progreso * 100) + "%";
-      // Actualizar contador
       let tiempoRestante = periodoRecolecta - tiempoPasado;
       if (tiempoRestante < 0) tiempoRestante = 0;
       document.getElementById("timerProduccion").innerText = msToHMS(tiempoRestante);
-      document.getElementById("btnRecolectar").disabled = progreso < 1;
+      document.getElementById("btnRecolectar").disabled = progreso < 1 || produccionPorMinuto() === 0;
     }
     function msToHMS(ms) {
       let total = Math.floor(ms / 1000);
@@ -507,11 +481,10 @@
     setInterval(actualizarBarraProduccion, 1000);
     actualizarBarraProduccion();
 
-    // Al recolectar producción
     document.getElementById("btnRecolectar").addEventListener("click", () => {
       const ahora = Date.now();
       let tiempoPasado = Math.max(0, ahora - lastRecolectado);
-      if (tiempoPasado > periodoRecolecta) tiempoPasado = periodoRecolecta; // Máx. 12h
+      if (tiempoPasado > periodoRecolecta) tiempoPasado = periodoRecolecta;
       const minutos = Math.floor(tiempoPasado / 60000);
       let monedasRecoleccion = 0;
       plants.forEach(p => {
@@ -520,7 +493,7 @@
       monedasRecoleccion = Math.floor(monedasRecoleccion);
       coins += monedasRecoleccion;
       lastRecolectado = ahora;
-      localStorage.setItem("xanfarm-lastRecolectado", lastRecolectado);
+      guardarProgreso();
       actualizarMonedas();
       actualizarBarraProduccion();
       animarRecoleccion(monedasRecoleccion);
@@ -529,68 +502,37 @@
     function animarRecoleccion(monedas) {
       const anim = document.getElementById("recoleccionAnimada");
       anim.style.display = "block";
-      anim.innerHTML = `💰<br>Felicidades<br>Obtuviste<br><b>${monedas}</b> de producción<br><small>¡Vuelve en 12 horas Granjero!</small>`;
+      anim.innerHTML = `<img src="https://i.imgur.com/n9OyA2U.png" class="moneda-icon" style="width:40px;"><br>Felicidades<br>Obtuviste<br><b>${monedas}</b> de producción<br><small>¡Vuelve en 12 horas Granjero!</small>`;
       setTimeout(() => { anim.style.display = "none"; }, 1500);
     }
 
     // ----------- Cofres -----------
     const cofres = {
-      plata: {
-        nombre: "Plata",
-        img: "https://i.imgur.com/dYd1aoN.png",
-        llaves: 10,
-        btnTexto: "Abrir Cofre de Plata",
-      },
-      oro: {
-        nombre: "Oro",
-        img: "https://i.imgur.com/HpkO9qJ.png",
-        llaves: 50,
-        btnTexto: "Abrir Cofre de Oro",
-      },
-      diamante: {
-        nombre: "Diamante",
-        img: "https://i.imgur.com/HanPFOR.png",
-        llaves: 100,
-        btnTexto: "Abrir Cofre Diamante",
-      }
+      plata: { nombre: "Plata", img: "https://i.imgur.com/dYd1aoN.png", llaves: 10, btnTexto: "Abrir Cofre de Plata" },
+      oro: { nombre: "Oro", img: "https://i.imgur.com/HpkO9qJ.png", llaves: 50, btnTexto: "Abrir Cofre de Oro" },
+      diamante: { nombre: "Diamante", img: "https://i.imgur.com/HanPFOR.png", llaves: 100, btnTexto: "Abrir Cofre Diamante" }
     };
-
     let tipoCofreSeleccionado = "plata";
-    // NUEVAS PROBABILIDADES
-    // Plata: legendarios 0.1%, Oro: 4%, Diamante: 8%
     const probabilidades = {
-      plata: [
-        { rareza: "Legendaria", prob: 0.1 },
-        { rareza: "Épica", prob: 16 },
-        { rareza: "Rara", prob: 34 },
-        { rareza: "Común", prob: 49.9 }
-      ],
-      oro: [
-        { rareza: "Legendaria", prob: 4 },
-        { rareza: "Épica", prob: 20 },
-        { rareza: "Rara", prob: 36 },
-        { rareza: "Común", prob: 40 }
-      ],
-      diamante: [
-        { rareza: "Legendaria", prob: 8 },
-        { rareza: "Épica", prob: 32 },
-        { rareza: "Rara", prob: 32 },
-        { rareza: "Común", prob: 28 }
-      ]
+      plata: [ { rareza: "Legendaria", prob: 0.1 }, { rareza: "Épica", prob: 16 }, { rareza: "Rara", prob: 34 }, { rareza: "Común", prob: 49.9 } ],
+      oro: [ { rareza: "Legendaria", prob: 4 }, { rareza: "Épica", prob: 20 }, { rareza: "Rara", prob: 36 }, { rareza: "Común", prob: 40 } ],
+      diamante: [ { rareza: "Legendaria", prob: 8 }, { rareza: "Épica", prob: 32 }, { rareza: "Rara", prob: 32 }, { rareza: "Común", prob: 28 } ]
     };
 
-    // Modal cofres
     function actualizarCofreUI(tipo) {
       const cofre = cofres[tipo];
       document.getElementById("tituloCofre").innerText = `🎁 Cofre ${cofre.nombre}`;
       document.getElementById("imgCofre").src = cofre.img;
       document.getElementById("llavesNecesarias").innerText = cofre.llaves;
+      let gratis = cofresGratisDisponibles(tipo);
+      let infoExtra = gratis > 0 ? `<div style="color:#24c24c;font-weight:bold;">Te quedan ${gratis} cofres gratis para abrir</div>` : "";
       document.getElementById("cofreInfo").innerHTML = `
         Necesitas <span id="llavesNecesarias">${cofre.llaves}</span> llaves para abrir este cofre.<br>
         <span class="cofre-keys">Tienes: <span id="userKeys">${keys}</span> llaves</span>
+        ${infoExtra}
       `;
       document.getElementById("abrirCofreBtn").innerText = cofre.btnTexto;
-      document.getElementById("abrirCofreBtn").disabled = (keys < cofre.llaves);
+      document.getElementById("abrirCofreBtn").disabled = (keys < cofre.llaves && gratis === 0);
       document.getElementById("resultadoCofre").innerHTML = "";
     }
     function seleccionarTipoCofre(tipo) {
@@ -610,29 +552,38 @@
     document.getElementById("tabOro").addEventListener("click", () => seleccionarTipoCofre("oro"));
     document.getElementById("tabDiamante").addEventListener("click", () => seleccionarTipoCofre("diamante"));
 
+    function cofresGratisDisponibles(tipo) {
+      if (tipo === "plata") return cofresGratis.plata;
+      if (tipo === "oro") return cofresGratis.oro;
+      return 0;
+    }
     document.getElementById("abrirCofreBtn").addEventListener("click", () => {
       const tipo = tipoCofreSeleccionado;
       const cofre = cofres[tipo];
-      if (keys >= cofre.llaves) {
+      let gratis = cofresGratisDisponibles(tipo);
+      if (gratis > 0) {
+        cofresGratis[tipo]--;
+        abrirCofre(tipo, true);
+      } else if (keys >= cofre.llaves) {
         keys -= cofre.llaves;
-        actualizarLlaves();
-        actualizarCofreUI(tipo);
-        // Animación de cofre abierto
-        const imgCofre = document.getElementById("imgCofre");
-        imgCofre.classList.add("abierto");
-        setTimeout(() => {
-          imgCofre.classList.remove("abierto");
-          // Lógica de premio
-          const resultado = calcularCofre(tipo);
-          mostrarResultadoCofre(resultado);
-        }, 700);
-      } else {
-        document.getElementById("resultadoCofre").innerHTML = '<span style="color:red;">No tienes suficientes llaves.</span>';
+        abrirCofre(tipo, false);
       }
+      guardarProgreso();
+      actualizarLlaves();
+      actualizarCofreUI(tipo);
     });
 
+    function abrirCofre(tipo, esGratis) {
+      const imgCofre = document.getElementById("imgCofre");
+      imgCofre.classList.add("abierto");
+      setTimeout(() => {
+        imgCofre.classList.remove("abierto");
+        const resultado = calcularCofre(tipo);
+        mostrarResultadoCofre(resultado);
+        guardarProgreso();
+      }, 700);
+    }
     function calcularCofre(tipo) {
-      // Probabilidad por rareza
       const tabla = probabilidades[tipo];
       const random = Math.random() * 100;
       let acumulado = 0;
@@ -644,10 +595,8 @@
           break;
         }
       }
-      // Para legendaria selecciona piña dorada con el doble de probabilidad
       let posibles = plants.filter(p => p.rareza === rarezaElegida);
       if (rarezaElegida === "Legendaria") {
-        // Doble chance para piña dorada
         posibles = [...posibles, ...posibles.filter(p=>p.nombre === "Piña dorada")];
       }
       const planta = posibles[Math.floor(Math.random() * posibles.length)];
@@ -665,6 +614,7 @@
       `;
       const encontrada = plants.find(p => p.nombre === planta.nombre);
       if (encontrada) encontrada.cantidad++;
+      guardarProgreso();
       mostrarInventario();
     }
 
@@ -672,7 +622,9 @@
     function mostrarInventario() {
       const lista = document.getElementById("plantList");
       lista.innerHTML = "";
+      let totalProd = 0;
       plants.forEach((planta) => {
+        totalProd += planta.valor * planta.cantidad;
         lista.innerHTML += `
         <div class="plant">
           <img src="${planta.img}" alt="${planta.nombre}">
@@ -685,13 +637,32 @@
         </div>
         `;
       });
+      if (totalProd === 0) {
+        lista.innerHTML = `<div style="color:#888;font-size:1.1em;margin:20px 0;">Aún no tienes cultivos.<br>¡Abre cofres para empezar!</div>`;
+      }
+    }
+
+    // ----------- PERFIL Y RANGO -----------
+    function getRango(produccionDia) {
+      if (produccionDia >= 1000) return "Minero Excepcional";
+      if (produccionDia >= 600) return "Minero Gold";
+      if (produccionDia >= 300) return "Minero Experimentado";
+      if (produccionDia >= 100) return "Minero Plata";
+      return "Minero Principiante";
+    }
+
+    function actualizarPerfil() {
+      let prodDia = produccionPorDia();
+      document.getElementById("perfilRango").innerText = getRango(prodDia);
+      document.getElementById("perfilProduccion").innerText = prodDia;
+      document.getElementById("perfilCoins").innerText = coins;
+      document.getElementById("perfilKeys").innerText = keys;
     }
 
     // ----------- MODALES PERFIL, INVENTARIO, MISIONES, TIENDA -----------
     document.getElementById("botonPerfil").addEventListener("click", () => {
+      actualizarPerfil();
       document.getElementById("profileModal").style.display = "flex";
-      actualizarMonedas();
-      actualizarLlaves();
     });
     document.getElementById("cerrarPerfilBtn").addEventListener("click", () => document.getElementById("profileModal").style.display = "none");
     document.getElementById("botonInventario").addEventListener("click", () => {
@@ -747,7 +718,7 @@
 
         bloque.innerHTML = `
           <strong>${m.nombre}</strong>
-          <small>Recompensa: ${m.recompensa.monedas} 💰</small>
+          <small>Recompensa: ${m.recompensa.monedas} <img src="https://i.imgur.com/n9OyA2U.png" class="moneda-icon"></small>
           <small>Progreso: ${progresoTexto}</small>
           ${btn}
         `;
@@ -769,6 +740,7 @@
       if (m && !m.completada && m.progreso >= m.requerimiento) {
         m.completada = true;
         coins += m.recompensa.monedas;
+        guardarProgreso();
         actualizarMonedas();
         mostrarMisiones(tipo);
         alert(`¡Misión completada! Ganaste ${m.recompensa.monedas} monedas 🎉`);
@@ -779,11 +751,13 @@
     function actualizarMonedas() {
       document.getElementById("coins").innerText = coins;
       document.getElementById("perfilCoins") && (document.getElementById("perfilCoins").innerText = coins);
+      guardarProgreso();
     }
     function actualizarLlaves() {
       document.getElementById("keys").innerText = keys;
       document.getElementById("userKeys").innerText = keys;
       document.getElementById("perfilKeys") && (document.getElementById("perfilKeys").innerText = keys);
+      guardarProgreso();
     }
     actualizarMonedas();
     actualizarLlaves();
