@@ -2,389 +2,961 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>XanFarm Juego</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XanFarm</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <style>
-    /* Reset y base */
+    html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
     body {
-      margin: 0;
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: #f7f7fa;
-      color: #222;
+      font-family: sans-serif;
+      text-align: center;
+      background-color: #fefae0;
+      height: 100%;
+      width: 100vw;
+      overscroll-behavior: contain;
     }
-    h2, h3 {
-      margin: 0 0 12px 0;
+    #pantallaPrincipal {
+      background-image: url("https://i.imgur.com/qbJMnhv.png");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      min-height: 100vh;
+      min-width: 100vw;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      color: white;
+      padding: 20px 0 0 0;
+      z-index: 1;
+      position: relative;
+      box-sizing: border-box;
     }
-    button {
-      background: #46b1e5;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      padding: 8px 18px;
-      cursor: pointer;
+    .moneda-bar {
+      margin: 0 0 10px 0;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1em;
+    }
+    .moneda-bar span {
+      background: rgba(255,255,255,0.85);
+      color: #333;
+      border-radius: 16px;
+      padding: 6px 14px;
+      margin: 0 2px;
       font-weight: bold;
-      font-size: 16px;
-      transition: background 0.2s;
+      display: inline-block;
+      min-width: 70px;
     }
-    button:hover {
-      background: #3689b0;
-    }
-    /* Modales */
-    .modal {
-      display: none;
+    .menu {
       position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100vw;
+      background: #fff;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      padding: 10px 0;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+      z-index: 999;
+    }
+    .menu button {
+      flex: 1 0 30%;
+      margin: 6px 4px;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      background-color: #fff;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+    .menu button:active { transform: scale(0.97); }
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0,0,0,0.4);
+      display: none;
+      justify-content: center;
+      align-items: center;
       z-index: 1000;
-      left: 0; top: 0;
-      width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.45);
-      justify-content: center; align-items: center;
     }
     .modal-content {
       background: #fff;
-      padding: 28px 22px 18px 22px;
+      padding: 20px;
       border-radius: 12px;
-      min-width: 320px;
-      max-width: 95vw;
-      max-height: 80vh;
+      width: 92%;
+      max-width: 450px;
+      text-align: center;
+      max-height: 90vh;
       overflow-y: auto;
-      box-shadow: 0 4px 22px #0004;
-      position: relative;
-      transition: background 0.3s;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      color: #222;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    .close {
-      position: absolute;
-      right: 15px; top: 15px;
-      font-size: 24px;
-      color: #555;
+    .close-btn {
+      align-self: flex-end;
+      cursor: pointer;
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    .cofre-img {
+      width: 140px;
+      max-width: 80vw;
+      margin: 24px auto 12px auto;
+      display: block;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .cofre-img.abierto {
+      animation: cofre-abierto 0.7s cubic-bezier(.21,1.02,.73,.97);
+    }
+    @keyframes cofre-abierto {
+      0% { transform: scale(1) rotate(0deg);}
+      30% { transform: scale(1.18) rotate(-8deg);}
+      60% { transform: scale(1.1) rotate(6deg);}
+      100% { transform: scale(1) rotate(0deg);}
+    }
+    .cofre-info {
+      margin-bottom: 14px;
+      color: #222;
+      font-weight: bold;
+    }
+    .cofre-keys {
+      font-size: 1rem;
+      margin-top: 2px;
+    }
+    .cofre-open-btn {
+      padding: 10px 26px;
+      background-color: #3777ca;
+      color: white;
+      border: 0;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      margin-top: 4px;
+      cursor: pointer;
+      transition: background 0.18s;
+    }
+    .cofre-open-btn:disabled {
+      background: #aaa;
+      cursor: not-allowed;
+    }
+    .tab-selector {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 12px;
+      gap: 6px;
+    }
+    .tab-selector button {
+      margin: 4px 0;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      background: #eee;
       cursor: pointer;
       font-weight: bold;
     }
+    .tab-selector .active {
+      background: #3777ca;
+      color: white;
+    }
+    #resultadoCofre { min-height: 24px; }
 
-    /* FONDOS PERSONALIZADOS PARA CADA COFRE */
-    .cofre-fondo-plata {
-      background: url('https://i.imgur.com/9DvPrS8.png') center/cover no-repeat, #f7f7f7;
-    }
-    .cofre-fondo-oro {
-      background: url('https://i.imgur.com/MVPWQeH.png') center/cover no-repeat, #fff8e1;
-    }
-    .cofre-fondo-diamante {
-      background: url('https://i.imgur.com/WD9fqx0.png') center/cover no-repeat, #e0f7fa;
-    }
-
-    /* FONDO PERSONALIZADO PARA INVENTARIO */
-    #inventoryModal .modal-content {
-      background: url('https://i.imgur.com/WyHOTjm.png') center/cover no-repeat, #fff;
-      color: #222;
-    }
-
-    /* Cofre selección */
-    .cofre-lista {
-      display: flex; justify-content: center; gap: 18px; margin-bottom: 16px;
-    }
-    .cofre-btn {
-      border: none; background: #eee; border-radius: 8px;
-      padding: 8px 18px; font-weight: bold; font-size: 16px;
-      cursor: pointer; box-shadow: 0 2px 8px #0002;
-      transition: background 0.2s;
-    }
-    .cofre-btn.selected, .cofre-btn:hover { background: #d2f0f3; }
-
-    /* Inventario */
-    #inventarioLista {
-      display: flex; flex-wrap: wrap; gap: 18px;
-      justify-content: center;
-    }
     .plant {
-      background: #fff8;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px #0001;
-      padding: 10px 12px;
-      min-width: 135px;
-      display: flex; align-items: center; gap: 12px;
-      transition: background 0.2s;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      margin: 10px 0;
+      background: #fafafa;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
     .plant img {
-      width: 48px; height: 48px;
-      border-radius: 8px;
-      background: #eee;
-      object-fit: contain;
-      border: 1px solid #ddd;
+      width: 34px;
+      border-radius: 5px;
     }
     .plant-info {
       flex: 1;
-      font-size: 15px;
     }
-    .production { font-size: 13px; color: #6c47a4; }
-
-    /* Tienda */
-    .paquete-tienda {
-      background: #fbeedc;
-      border-radius: 9px;
-      box-shadow: 0 2px 10px #0001;
-      padding: 12px 15px;
-      margin-bottom: 16px;
-      display: flex; flex-direction: column; align-items: center;
+    .production {
+      color: #3777ca;
+      font-size: 14px;
+      font-weight: bold;
+      margin-left: 8px;
     }
-    .paquete-img {
-      width: 70px; height: 70px; margin-bottom: 12px;
+    #progresoProduccion {
+      width: 270px;
+      height: 22px;
+      background: #eee;
+      border-radius: 13px;
+      margin: 10px auto 5px auto;
+      position: relative;
+      overflow: hidden;
+      border: 1.5px solid #bdbdbd;
+      box-shadow: 0 1px 5px #0001;
     }
-
-    /* Canje */
-    .canjear-codigo-box {
-      margin-top: 18px;
-      display: flex;
-      gap: 10px;
-      justify-content: center;
+    #barraProduccion {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      height: 100%;
+      background: linear-gradient(90deg, #ffe066, #4dd599 90%);
+      width: 0%;
+      border-radius: 13px 0 0 13px;
+      transition: width 0.7s cubic-bezier(.23,.89,.43,.99);
     }
-    .canjear-codigo-box input {
-      padding: 6px 10px;
-      border-radius: 5px;
-      border: 1px solid #bbb;
-      font-size: 16px;
+    #contadorProduccion {
+      font-weight: bold;
+      margin-bottom: 8px;
+      font-size: 1.07em;
+      color: #13314e;
+      text-shadow: 0 1px 5px #fff, 0 1px 6px #13314e22;
     }
-    .canjear-codigo-box button {
-      background: #46b1e5;
+    #btnRecolectar {
+      margin: 10px auto 0 auto;
+      padding: 12px 30px;
+      font-size: 1.13em;
+      background: #4dd599;
       color: #fff;
+      border-radius: 10px;
       border: none;
-      border-radius: 5px;
-      padding: 6px 16px;
       cursor: pointer;
       font-weight: bold;
+      transition: background 0.2s;
+      box-shadow: 0 2px 6px #4dd59944;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-    .canjear-codigo-box button:hover {
-      background: #3689b0;
+    #btnRecolectar:disabled {
+      background: #ddd;
+      color: #aaa;
+      cursor: not-allowed;
     }
+    #granjeroAnim {
+      width: 40px;
+      height: 40px;
+      margin-right: 5px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #eee;
+      animation: correr 1.2s infinite linear;
+      display: inline-block;
+    }
+    @keyframes correr {
+      0% { transform: translateX(0);}
+      25% { transform: translateX(15px);}
+      50% { transform: translateX(0);}
+      75% { transform: translateX(-15px);}
+      100% { transform: translateX(0);}
+    }
+    #recoleccionAnimada {
+      font-size: 2.2em;
+      color: #ffe066;
+      position: absolute;
+      left: 50%;
+      top: 15%;
+      transform: translate(-50%,0);
+      z-index: 1001;
+      pointer-events: none;
+      animation: monedasSalto 1.2s cubic-bezier(.21,1.02,.73,.97);
+      display: none;
+      background: rgba(255,255,255,0.82);
+      border-radius: 18px;
+      padding: 18px 36px;
+      box-shadow: 0 2px 16px #ffe06677;
+    }
+    @keyframes monedasSalto {
+      0% { opacity:0; transform: translate(-50%,30px) scale(0.7);}
+      20% { opacity:1; transform: translate(-50%,-16px) scale(1.07);}
+      60% { opacity:1; transform: translate(-50%,-28px) scale(1.07);}
+      100% { opacity:0; transform: translate(-50%,0) scale(0.7);}
+    }
+    .moneda-icon {
+      width: 20px;
+      vertical-align: middle;
+      margin-right: 3px;
+    }
+    .proximamente {
+      color: #888;
+      font-style: italic;
+      padding: 20px;
+      background: #f5f5f5;
+      border-radius: 8px;
+      margin: 15px 0;
+    }
+    .mission {
+      background: #f9f9f9;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 10px 0;
+      text-align: left;
+    }
+    .mission small {
+      display: block;
+      margin-top: 4px;
+      color: #666;
+    }
+    .btn-reclamar {
+      background: #4dd599;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      margin-top: 8px;
+      cursor: pointer;
+    }
+    .perfil-fondo {
+  background: url('https://i.imgur.com/n9OyA2U.png') center/cover no-repeat, #15151a;
+  box-shadow: 0 0 25px #00ffe788;
+  color: #fff !important;
+  border: 2.5px solid #00ffe7;
+  position: relative;
+}
+.perfil-avatar {
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: center;
+}
+.gamer-rango {
+  background: linear-gradient(90deg, #00ffe7 10%, #0ff 40%, #aaf 60%, #00ffe7 90%);
+  color: #fff;
+  padding: 3px 18px;
+  border-radius: 12px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  font-size: 1.13em;
+  filter: drop-shadow(0 0 5px #00ffe7) drop-shadow(0 0 8px #fff);
+  text-shadow: 0 0 7px #00ffe7, 0 0 15px #fff;
+  border: 2px solid #00ffe7;
+  margin-left: 4px;
+  box-shadow: 0 0 18px #00ffe788;
+}
   </style>
 </head>
 <body>
-  <header>
-    <h2 style="text-align:center; margin:20px 0;">XanFarm Juego</h2>
-    <div style="text-align:center;">
-      <button onclick="abrirInventario()">Inventario</button>
-      <button onclick="abrirTienda()">Tienda</button>
-      <button onclick="abrirCofres()">Cofres</button>
+  <div id="recoleccionAnimada"></div>
+  <div id="pantallaPrincipal">
+    <h1>🌱 ¡Bienvenido a XanFarm!</h1>
+    <div class="moneda-bar">
+      <span>
+        <img src="https://i.imgur.com/n9OyA2U.png" class="moneda-icon" alt="Moneda">
+        Monedas: <span id="coins">0</span>
+      </span>
+      <span>🔑 Llaves: <span id="keys">0</span></span>
     </div>
-  </header>
-
-  <!-- MODAL INVENTARIO -->
-  <div id="inventoryModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="cerrarInventario()">&times;</span>
-      <h3>Inventario de Cultivos</h3>
-      <div id="inventarioLista"></div>
+    <div id="progresoProduccion">
+      <div id="barraProduccion"></div>
     </div>
+    <div id="contadorProduccion"><b>Producción lista en:</b> <span id="timerProduccion">--:--:--</span></div>
+    <button id="btnRecolectar" disabled>
+      <img id="granjeroAnim" src="https://i.imgur.com/bCqQ3gO.gif" alt="Granjero corriendo" style="background:#eee;">
+      Recolectar producción
+    </button>
   </div>
 
-  <!-- MODAL TIENDA -->
-  <div id="tiendaModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="cerrarTienda()">&times;</span>
-      <h3>Tienda de Llaves</h3>
-      <div id="paquetesTienda"></div>
-      <!-- Campo para canjear código -->
-      <div class="canjear-codigo-box">
-        <input id="codigoInput" type="text" placeholder="Ingresa tu código de paquete">
-        <button onclick="canjearCodigo()">Canjear</button>
-      </div>
-    </div>
+  <div class="menu">
+    <button id="botonPerfil">🧑‍💻 Perfil</button>
+    <button id="botonInventario">🎒 Inventario</button>
+    <button id="botonCofre">🎁 Cofre</button>
+    <button id="botonMisiones">🧭 Misiones</button>
+    <button id="botonTienda">🏪 Tienda</button>
+    <button id="botonOpciones">⚙️ Opciones</button>
   </div>
 
-  <!-- MODAL COFRES -->
+  <!-- Cofres Modal -->
   <div id="cofreModal" class="modal">
     <div class="modal-content">
-      <span class="close" onclick="cerrarCofres()">&times;</span>
-      <h3>Cofres</h3>
-      <div class="cofre-lista">
-        <button class="cofre-btn" id="btn-plata" onclick="mostrarCofre('plata')">Plata</button>
-        <button class="cofre-btn" id="btn-oro" onclick="mostrarCofre('oro')">Oro</button>
-        <button class="cofre-btn" id="btn-diamante" onclick="mostrarCofre('diamante')">Diamante</button>
+      <span class="close-btn" id="cerrarCofreBtn">×</span>
+      <h2 id="tituloCofre">🎁 Cofre Plata</h2>
+      <div class="tab-selector">
+        <button id="tabPlata" class="active">Plata</button>
+        <button id="tabOro">Oro</button>
+        <button id="tabDiamante">Diamante</button>
       </div>
-      <div id="contenidoCofre"></div>
+      <img id="imgCofre" class="cofre-img" src="https://i.imgur.com/dYd1aoN.png" alt="Cofre" />
+      <div class="cofre-info" id="cofreInfo">
+        Necesitas <span id="llavesNecesarias">10</span> llaves para abrir este cofre.<br>
+        <span class="cofre-keys">Tienes: <span id="userKeys">0</span> llaves</span>
+      </div>
+      <button id="abrirCofreBtn" class="cofre-open-btn">Abrir Cofre de Plata</button>
+      <div id="resultadoCofre"></div>
+      <button id="cerrarCofreBtn2">Cerrar</button>
     </div>
   </div>
-</body>
-<script>
-// ================== VARIABLES INICIALES ==================
-let user = {
-  keys: 0,
-  inventory: [
-    { nombre: "Trigo", cantidad: 8, produccion: "+1 llaves/h", img: "https://i.imgur.com/ww8h9vT.png" },
-    { nombre: "Maíz", cantidad: 5, produccion: "+2 llaves/h", img: "https://i.imgur.com/9JjfVRg.png" }
-    // ... agrega tus cultivos reales
-  ]
-};
 
-// ================== INVENTARIO ==================
-function abrirInventario() {
-  document.getElementById("inventoryModal").style.display = "flex";
-  renderizarInventario();
-}
-function cerrarInventario() {
-  document.getElementById("inventoryModal").style.display = "none";
-}
-function renderizarInventario() {
-  const cont = document.getElementById("inventarioLista");
-  cont.innerHTML = "";
-  user.inventory.forEach(cultivo => {
-    cont.innerHTML += `
-      <div class="plant">
-        <img src="${cultivo.img}">
-        <div class="plant-info">
-          <b>${cultivo.nombre}</b><br>
-          Cantidad: ${cultivo.cantidad}<br>
-          <span class="production">${cultivo.produccion}</span>
+  <!-- Perfil Modal Mejorado -->
+<div id="profileModal" class="modal">
+  <div class="modal-content perfil-fondo">
+    <span class="close-btn" id="cerrarPerfilBtn">×</span>
+    <h2 style="margin-bottom:8px;">🧑‍🌾 Tu Perfil</h2>
+    <div class="perfil-avatar">
+      <img src="https://i.imgur.com/n9OyA2U.png" alt="Avatar" style="width:90px; border-radius:50%; border:3px solid #00ffe7;box-shadow:0 0 18px #00ffe799;">
+    </div>
+    <div style="margin:12px 0 8px 0;">
+      <strong>Rango:</strong>
+      <span id="perfilRango" class="gamer-rango"></span>
+    </div>
+    <div>
+      <strong>Producción diaria:</strong> <span id="perfilProduccion"></span> monedas/día
+    </div>
+    <div>
+      <strong>Monedas:</strong> <span id="perfilCoins">0</span>
+    </div>
+    <div>
+      <strong>Llaves:</strong> <span id="perfilKeys">0</span>
+    </div>
+  </div>
+</div>
+
+  <!-- Inventario Modal -->
+  <div id="inventoryModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="cerrarInventarioBtn">×</span>
+      <h2>🎒 Inventario de Cultivos</h2>
+      <div id="plantList"></div>
+    </div>
+  </div>
+
+  <!-- Misiones Modal -->
+  <div id="missionsModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="cerrarMisionesBtn">×</span>
+      <h2>🧭 Misiones</h2>
+      <div class="tab-selector">
+        <button id="tabDiarias" class="active">🔄 Diarias</button>
+        <button id="tabSemanales">📅 Semanales</button>
+        <button id="tabDesafio">💥 Desafíos</button>
+      </div>
+      <div id="misionesContenedor">
+        <!-- Contenido dinámico según la pestaña seleccionada -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Tienda Modal NUEVA -->
+  <div id="newShopModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="cerrarTiendaNuevaBtn">×</span>
+      <h2>🏪 Tienda</h2>
+      <div id="paquetesTienda"></div>
+      <hr>
+      <div>
+        <b>Conversión:</b> 100 monedas = 10 llaves
+        <button id="convertirMonedasBtn" style="margin-left:10px;">Convertir</button>
+      </div>
+      <div style="margin:12px 0 0 0;">
+        <button id="retirosBtn" style="background:#ffd600;color:#222;border:none;border-radius:7px;padding:9px 20px;">Retiros</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL OPCIONES -->
+  <div id="optionsModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="cerrarOpcionesBtn">×</span>
+      <h2>⚙️ Opciones</h2>
+      <button id="borrarProgresoBtn" style="background:#f44;color:#fff;margin:8px 0;border:none;border-radius:7px;padding:10px 16px;font-size:1em;">Borrar Progreso</button>
+      <button id="ajustarBrilloBtn" style="margin:8px 0;">Ajustar Brillo</button>
+      <button id="musicaBtn" style="margin:8px 0;">Desactivar Música</button>
+      <button id="billeteraBtn" style="margin:8px 0;">Conectar Billetera</button>
+      <div style="margin-top:16px;">
+        <a href="#" id="politicasLink" style="color:#3777ca;text-decoration:underline;">Políticas de Privacidad</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL POLÍTICAS -->
+  <div id="politicasModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="cerrarPoliticasBtn">×</span>
+      <h2>Políticas de Privacidad</h2>
+      <div style="text-align:left;">
+        XanFarm respeta tu privacidad. No compartimos tus datos personales con terceros. Los datos de juego se guardan solo localmente y puedes eliminarlos desde Opciones.
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL RETIROS -->
+  <div id="retirosModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="cerrarRetirosBtn">×</span>
+      <h2>Retiros</h2>
+      <div>Próximamente podrás retirar recompensas vinculando tu billetera.</div>
+    </div>
+  </div>
+  <script>
+document.addEventListener("DOMContentLoaded", () => {
+  // ---------- DATOS POR DEFECTO ----------
+  const PLANTS_DEFAULT = [
+    { nombre: "Piña dorada", valor: 500, cantidad: 0, rareza: "Legendaria", img: "https://i.imgur.com/4LLQVZR.png" },
+    { nombre: "Uva eléctrica", valor: 350, cantidad: 0, rareza: "Legendaria", img: "https://i.imgur.com/3kY9HG7.png" },
+    { nombre: "Cereza de lava", valor: 350, cantidad: 0, rareza: "Legendaria", img: "https://i.imgur.com/nlhsGu0.png" },
+    { nombre: "Flor de cacao", valor: 180, cantidad: 0, rareza: "Épica", img: "https://i.imgur.com/DmtOhmA.png" },
+    { nombre: "Melón ámbar", valor: 180, cantidad: 0, rareza: "Épica", img: "https://i.imgur.com/ZwC4Kde.png" },
+    { nombre: "Frijol lunar", valor: 70, cantidad: 0, rareza: "Rara", img: "https://i.imgur.com/DHMhAut.png" },
+    { nombre: "Zanahoria cristal", valor: 70, cantidad: 0, rareza: "Rara", img: "https://i.imgur.com/PqYvGOs.png" },
+    { nombre: "Choclo místico", valor: 70, cantidad: 0, rareza: "Rara", img: "https://i.imgur.com/tlQeAup.png" },
+    { nombre: "Maíz dulce", valor: 30, cantidad: 0, rareza: "Común", img: "https://i.imgur.com/o6yWfY0.png" },
+    { nombre: "Tomate solar", valor: 30, cantidad: 0, rareza: "Común", img: "https://i.imgur.com/QdRLusf.png" },
+    { nombre: "Trigo solar", valor: 30, cantidad: 0, rareza: "Común", img: "https://i.imgur.com/8U8tirk.png" }
+  ];
+
+  // ---------- CARGA Y GUARDADO ----------
+  function guardarProgreso() {
+    localStorage.setItem("xanfarm-progreso", JSON.stringify({
+      coins, keys, plants, cofresGratis, lastRecolectado
+    }));
+  }
+  
+  function cargarProgreso() {
+    const data = localStorage.getItem("xanfarm-progreso");
+    if (!data) return false;
+    try {
+      const obj = JSON.parse(data);
+      coins = obj.coins ?? 0;
+      keys = obj.keys ?? 0;
+      plants = obj.plants ?? JSON.parse(JSON.stringify(PLANTS_DEFAULT));
+      cofresGratis = obj.cofresGratis ?? { oro: 0, plata: 0 };
+      lastRecolectado = obj.lastRecolectado ?? Date.now();
+      return true;
+    } catch { return false; }
+  }
+
+  // ---------- VARIABLES DEL JUEGO ----------
+  let coins = 0, keys = 0;
+  let plants = JSON.parse(JSON.stringify(PLANTS_DEFAULT));
+  let cofresGratis = { oro: 0, plata: 0 };
+  let lastRecolectado = Date.now();
+
+  // ---------- BONO DE BIENVENIDA ----------
+  let yaRecibioBono = localStorage.getItem("xanfarm-yaRecibioBono") === "1";
+  if (!cargarProgreso()) {
+    coins = 0;
+    keys = 0;
+    plants = JSON.parse(JSON.stringify(PLANTS_DEFAULT));
+    plants.forEach(p => p.cantidad = 0);
+    cofresGratis = { oro: 1, plata: 3 };
+    lastRecolectado = Date.now();
+    guardarProgreso();
+  }
+  if (!yaRecibioBono) {
+    cofresGratis = { oro: 1, plata: 3 };
+    localStorage.setItem("xanfarm-yaRecibioBono", "1");
+    guardarProgreso();
+  }
+
+  // ----------- SISTEMA DE PRODUCCIÓN AUTOMÁTICA -----------
+  const periodoRecolecta = 12 * 60 * 60 * 1000; // 12 horas
+  function produccionPorMinuto() {
+    let total = 0;
+    plants.forEach(p => total += (p.valor * p.cantidad) / 1440);
+    return total;
+  }
+  function produccionPorDia() {
+    let total = 0;
+    plants.forEach(p => total += p.valor * p.cantidad);
+    return total;
+  }
+  function actualizarBarraProduccion() {
+    const ahora = Date.now();
+    const tiempoPasado = Math.max(0, ahora - lastRecolectado);
+    const progreso = Math.min(1, tiempoPasado / periodoRecolecta);
+    document.getElementById("barraProduccion").style.width = (progreso * 100) + "%";
+    let tiempoRestante = periodoRecolecta - tiempoPasado;
+    if (tiempoRestante < 0) tiempoRestante = 0;
+    document.getElementById("timerProduccion").innerText = msToHMS(tiempoRestante);
+    document.getElementById("btnRecolectar").disabled = progreso < 1 || produccionPorMinuto() === 0;
+  }
+  function msToHMS(ms) {
+    let total = Math.floor(ms / 1000);
+    const h = String(Math.floor(total / 3600)).padStart(2, "0");
+    total %= 3600;
+    const m = String(Math.floor(total / 60)).padStart(2, "0");
+    const s = String(total % 60).padStart(2, "0");
+    return `${h}:${m}:${s}`;
+  }
+  setInterval(actualizarBarraProduccion, 1000);
+  actualizarBarraProduccion();
+
+  document.getElementById("btnRecolectar").addEventListener("click", () => {
+    const ahora = Date.now();
+    let tiempoPasado = Math.max(0, ahora - lastRecolectado);
+    if (tiempoPasado > periodoRecolecta) tiempoPasado = periodoRecolecta;
+    const minutos = Math.floor(tiempoPasado / 60000);
+    let monedasRecoleccion = 0;
+    plants.forEach(p => {
+      monedasRecoleccion += (p.valor * p.cantidad) * (minutos / 1440);
+    });
+    monedasRecoleccion = Math.floor(monedasRecoleccion);
+    coins += monedasRecoleccion;
+    lastRecolectado = ahora;
+    guardarProgreso();
+    actualizarMonedas();
+    actualizarBarraProduccion();
+    animarRecoleccion(monedasRecoleccion);
+  });
+
+  function animarRecoleccion(monedas) {
+    const anim = document.getElementById("recoleccionAnimada");
+    anim.style.display = "block";
+    anim.innerHTML = `<img src="https://i.imgur.com/n9OyA2U.png" class="moneda-icon" style="width:40px;"><br>Felicidades<br>Obtuviste<br><b>${monedas}</b> de producción<br><small>¡Vuelve en 12 horas Granjero!</small>`;
+    setTimeout(() => { anim.style.display = "none"; }, 1500);
+  }
+
+  // ----------- Cofres -----------
+  const cofres = {
+    plata: { nombre: "Plata", img: "https://i.imgur.com/dYd1aoN.png", llaves: 10, btnTexto: "Abrir Cofre de Plata" },
+    oro: { nombre: "Oro", img: "https://i.imgur.com/HpkO9qJ.png", llaves: 50, btnTexto: "Abrir Cofre de Oro" },
+    diamante: { nombre: "Diamante", img: "https://i.imgur.com/HanPFOR.png", llaves: 100, btnTexto: "Abrir Cofre Diamante" }
+  };
+  let tipoCofreSeleccionado = "plata";
+  const probabilidades = {
+    plata: [ { rareza: "Legendaria", prob: 0.1 }, { rareza: "Épica", prob: 16 }, { rareza: "Rara", prob: 34 }, { rareza: "Común", prob: 49.9 } ],
+    oro: [ { rareza: "Legendaria", prob: 4 }, { rareza: "Épica", prob: 20 }, { rareza: "Rara", prob: 36 }, { rareza: "Común", prob: 40 } ],
+    diamante: [ { rareza: "Legendaria", prob: 8 }, { rareza: "Épica", prob: 32 }, { rareza: "Rara", prob: 32 }, { rareza: "Común", prob: 28 } ]
+  };
+
+  function actualizarCofreUI(tipo) {
+    const cofre = cofres[tipo];
+    document.getElementById("tituloCofre").innerText = `🎁 Cofre ${cofre.nombre}`;
+    document.getElementById("imgCofre").src = cofre.img;
+    document.getElementById("llavesNecesarias").innerText = cofre.llaves;
+    let gratis = cofresGratisDisponibles(tipo);
+    let infoExtra = gratis > 0 ? `<div style="color:#24c24c;font-weight:bold;">Te quedan ${gratis} cofres gratis para abrir</div>` : "";
+    document.getElementById("cofreInfo").innerHTML = `
+      Necesitas <span id="llavesNecesarias">${cofre.llaves}</span> llaves para abrir este cofre.<br>
+      <span class="cofre-keys">Tienes: <span id="userKeys">${keys}</span> llaves</span>
+      ${infoExtra}
+    `;
+    document.getElementById("abrirCofreBtn").innerText = cofre.btnTexto;
+    document.getElementById("abrirCofreBtn").disabled = (keys < cofre.llaves && gratis === 0);
+    document.getElementById("resultadoCofre").innerHTML = "";
+  }
+  function seleccionarTipoCofre(tipo) {
+    tipoCofreSeleccionado = tipo;
+    document.querySelectorAll("#cofreModal .tab-selector button").forEach(b => b.classList.remove('active'));
+    document.getElementById("tab" + tipo.charAt(0).toUpperCase() + tipo.slice(1)).classList.add("active");
+    actualizarCofreUI(tipo);
+  }
+  document.getElementById("botonCofre").addEventListener("click", () => {
+    document.getElementById("cofreModal").style.display = "flex";
+    seleccionarTipoCofre("plata");
+    actualizarLlaves();
+  });
+  document.getElementById("cerrarCofreBtn").addEventListener("click", () => document.getElementById("cofreModal").style.display = "none");
+  document.getElementById("cerrarCofreBtn2").addEventListener("click", () => document.getElementById("cofreModal").style.display = "none");
+  document.getElementById("tabPlata").addEventListener("click", () => seleccionarTipoCofre("plata"));
+  document.getElementById("tabOro").addEventListener("click", () => seleccionarTipoCofre("oro"));
+  document.getElementById("tabDiamante").addEventListener("click", () => seleccionarTipoCofre("diamante"));
+
+  function cofresGratisDisponibles(tipo) {
+    if (tipo === "plata") return cofresGratis.plata;
+    if (tipo === "oro") return cofresGratis.oro;
+    return 0;
+  }
+  document.getElementById("abrirCofreBtn").addEventListener("click", () => {
+    const tipo = tipoCofreSeleccionado;
+    const cofre = cofres[tipo];
+    let gratis = cofresGratisDisponibles(tipo);
+    if (gratis > 0) {
+      cofresGratis[tipo]--;
+      abrirCofre(tipo, true);
+    } else if (keys >= cofre.llaves) {
+      keys -= cofre.llaves;
+      abrirCofre(tipo, false);
+    }
+    guardarProgreso();
+    actualizarLlaves();
+    actualizarCofreUI(tipo);
+  });
+
+  function abrirCofre(tipo, esGratis) {
+    const imgCofre = document.getElementById("imgCofre");
+    imgCofre.classList.add("abierto");
+    setTimeout(() => {
+      imgCofre.classList.remove("abierto");
+      const resultado = calcularCofre(tipo);
+      mostrarResultadoCofre(resultado);
+      guardarProgreso();
+    }, 700);
+  }
+  function calcularCofre(tipo) {
+    const tabla = probabilidades[tipo];
+    const random = Math.random() * 100;
+    let acumulado = 0;
+    let rarezaElegida = "Común";
+    for (const p of tabla) {
+      acumulado += p.prob;
+      if (random <= acumulado) {
+        rarezaElegida = p.rareza;
+        break;
+      }
+    }
+    let posibles = plants.filter(p => p.rareza === rarezaElegida);
+    if (rarezaElegida === "Legendaria") {
+      posibles = [...posibles, ...posibles.filter(p=>p.nombre === "Piña dorada")];
+    }
+    const planta = posibles[Math.floor(Math.random() * posibles.length)];
+    return planta;
+  }
+  function mostrarResultadoCofre(planta) {
+    const resultado = document.getElementById("resultadoCofre");
+    resultado.innerHTML = `
+      <div style="display:flex; flex-direction:column; align-items:center;">
+        <img src="${planta.img}" alt="${planta.nombre}" style="width:90px; margin:12px 0; border-radius:12px;box-shadow:0 2px 12px #ffe66d99;">
+        <div style="font-size:1.15em; font-weight:bold; color:#3777ca;">
+          ¡Felicitaciones! Obtuviste<br>${planta.nombre}
         </div>
       </div>
     `;
-  });
-}
+    const encontrada = plants.find(p => p.nombre === planta.nombre);
+    if (encontrada) encontrada.cantidad++;
+    guardarProgreso();
+    mostrarInventario();
+  }
 
-// ================== TIENDA ==================
-const paquetes = [
-  { nombre: "10 Llaves", precio: "1 USD", img: "https://i.imgur.com/3w3iJcL.png" },
-  { nombre: "25 Llaves", precio: "2 USD", img: "https://i.imgur.com/oRmw2qP.png" },
-  { nombre: "60 Llaves", precio: "4 USD", img: "https://i.imgur.com/pAHiQyt.png" }
-];
-function abrirTienda() {
-  document.getElementById("tiendaModal").style.display = "flex";
-  renderizarTienda();
-}
-function cerrarTienda() {
-  document.getElementById("tiendaModal").style.display = "none";
-}
-function renderizarTienda() {
-  const cont = document.getElementById("paquetesTienda");
-  cont.innerHTML = "";
-  paquetes.forEach((paq, i) => {
-    cont.innerHTML += `
-      <div class="paquete-tienda">
-        <img src="${paq.img}" class="paquete-img">
-        <b>${paq.nombre}</b>
-        <div>${paq.precio}</div>
-        <button onclick="comprarPaqueteTienda(${i})">Comprar</button>
+  // ----------- INVENTARIO -----------
+  function mostrarInventario() {
+    const lista = document.getElementById("plantList");
+    lista.innerHTML = "";
+    let totalProd = 0;
+    plants.forEach((planta) => {
+      totalProd += planta.valor * planta.cantidad;
+      lista.innerHTML += `
+      <div class="plant">
+        <img src="${planta.img}" alt="${planta.nombre}">
+        <div class="plant-info">
+          <b>${planta.nombre}</b> 
+          <span style="color:#9b51e0;">[${planta.rareza}]</span><br>
+          Cantidad: <b>${planta.cantidad}</b>
+          <span class="production">+${planta.valor * planta.cantidad} monedas/día</span>
+        </div>
       </div>
-    `;
+      `;
+    });
+    if (totalProd === 0) {
+      lista.innerHTML = `<div style="color:#888;font-size:1.1em;margin:20px 0;">Aún no tienes cultivos.<br>¡Abre cofres para empezar!</div>`;
+    }
+  }
+
+  // ----------- PERFIL Y RANGO -----------
+  function getRango(produccionDia) {
+    if (produccionDia >= 1000) return "Minero Excepcional";
+    if (produccionDia >= 600) return "Minero Gold";
+    if (produccionDia >= 300) return "Minero Experimentado";
+    if (produccionDia >= 100) return "Minero Plata";
+    return "Minero Principiante";
+  }
+
+  function actualizarPerfil() {
+    let prodDia = produccionPorDia();
+    document.getElementById("perfilRango").innerText = getRango(prodDia);
+    document.getElementById("perfilProduccion").innerText = prodDia;
+    document.getElementById("perfilCoins").innerText = coins;
+    document.getElementById("perfilKeys").innerText = keys;
+  }
+
+  // ----------- MODALES PERFIL, INVENTARIO, MISIONES -----------
+  document.getElementById("botonPerfil").addEventListener("click", () => {
+    actualizarPerfil();
+    document.getElementById("profileModal").style.display = "flex";
   });
-}
-// Botón de compra: abre Telegram con parámetro de paquete
-window.comprarPaqueteTienda = function(i) {
-  const botUsername = "XanFarmPaybot";
-  window.open(`https://t.me/${botUsername}?start=paquete${i+1}`, "_blank");
-};
-
-// ================== CANJE DE CÓDIGOS ==================
-const codigosValidos = {
-  "XAN-1234-PAQ1": { paquete: 1, descripcion: "Paquete 1: 10 llaves" },
-  "XAN-5678-PAQ2": { paquete: 2, descripcion: "Paquete 2: 25 llaves" },
-  "XAN-9999-PAQ3": { paquete: 3, descripcion: "Paquete 3: 60 llaves" }
-  // ... agrega tus códigos reales
-};
-function canjearCodigo() {
-  const input = document.getElementById("codigoInput").value.trim();
-  if (!input) { alert("Ingresa un código."); return; }
-  const usados = JSON.parse(localStorage.getItem("codigosUsados") || "[]");
-  if (usados.includes(input)) {
-    alert("Ya usaste este código.");
-    return;
-  }
-  if (codigosValidos[input]) {
-    const paquete = codigosValidos[input].paquete;
-    alert("¡Código válido! Has recibido: " + codigosValidos[input].descripcion);
-    // Entregar el paquete correspondiente
-    if (paquete === 1) user.keys += 10;
-    else if (paquete === 2) user.keys += 25;
-    else if (paquete === 3) user.keys += 60;
-    // Marcar el código como usado
-    usados.push(input);
-    localStorage.setItem("codigosUsados", JSON.stringify(usados));
-    actualizarLlavesUI();
-  } else {
-    alert("Código inválido.");
-  }
-}
-
-// Mostrar cantidad de llaves (puedes ponerlo en tu UI donde quieras)
-function actualizarLlavesUI() {
-  // Aquí debes actualizar donde muestres las llaves, por ejemplo:
-  // document.getElementById("llavesUI").innerText = user.keys + " llaves";
-  // Puedes agregarlo en tu header si quieres
-}
-
-// ================== COFRES ==================
-let cofreActual = "plata";
-function abrirCofres() {
-  document.getElementById("cofreModal").style.display = "flex";
-  mostrarCofre("plata");
-}
-function cerrarCofres() {
-  document.getElementById("cofreModal").style.display = "none";
-}
-function mostrarCofre(tipo) {
-  cofreActual = tipo;
-  actualizarCofreUI(tipo);
-  // Actualiza botón activo
-  document.getElementById("btn-plata").classList.remove("selected");
-  document.getElementById("btn-oro").classList.remove("selected");
-  document.getElementById("btn-diamante").classList.remove("selected");
-  document.getElementById("btn-" + tipo).classList.add("selected");
-}
-function actualizarCofreUI(tipo) {
-  // FONDO según cofre
-  const modalContent = document.querySelector("#cofreModal .modal-content");
-  modalContent.classList.remove('cofre-fondo-plata', 'cofre-fondo-oro', 'cofre-fondo-diamante');
-  if(tipo === 'plata') modalContent.classList.add('cofre-fondo-plata');
-  else if(tipo === 'oro') modalContent.classList.add('cofre-fondo-oro');
-  else if(tipo === 'diamante') modalContent.classList.add('cofre-fondo-diamante');
-
-  // Contenido del cofre
-  let contenido = "";
-  if (tipo === "plata") {
-    contenido = `
-      <img src="https://i.imgur.com/9DvPrS8.png" style="width:90px; display:block; margin:auto;">
-      <div style="text-align:center; margin:10px 0 18px 0;">Cofre de Plata</div>
-      <button onclick="abrirCofrePremio('plata')">Abrir Cofre (5 llaves)</button>
-    `;
-  } else if (tipo === "oro") {
-    contenido = `
-      <img src="https://i.imgur.com/MVPWQeH.png" style="width:90px; display:block; margin:auto;">
-      <div style="text-align:center; margin:10px 0 18px 0;">Cofre de Oro</div>
-      <button onclick="abrirCofrePremio('oro')">Abrir Cofre (12 llaves)</button>
-    `;
-  } else if (tipo === "diamante") {
-    contenido = `
-      <img src="https://i.imgur.com/WD9fqx0.png" style="width:90px; display:block; margin:auto;">
-      <div style="text-align:center; margin:10px 0 18px 0;">Cofre Diamante</div>
-      <button onclick="abrirCofrePremio('diamante')">Abrir Cofre (28 llaves)</button>
-    `;
-  }
-  document.getElementById("contenidoCofre").innerHTML = contenido;
-}
-
-// Simulación de abrir cofre
-function abrirCofrePremio(tipo) {
-  let costo = 0, premio = "";
-  if (tipo === "plata") { costo = 5; premio = "¡Ganaste 2 Trigos!"; }
-  else if (tipo === "oro") { costo = 12; premio = "¡Ganaste 1 Maíz y 1 Trigo!"; }
-  else if (tipo === "diamante") { costo = 28; premio = "¡Ganaste 2 Maíz y 2 Trigo!"; }
-  if (user.keys < costo) {
-    alert("No tienes suficientes llaves.");
-    return;
-  }
-  user.keys -= costo;
-  actualizarLlavesUI();
-  alert(premio);
-  // Aquí puedes añadir lógica para agregar el premio real al inventario
-}
-
-// ================== CIERRE MODALES AL TOCAR FUERA ==================
-window.onclick = function(event) {
-  ['inventoryModal', 'tiendaModal', 'cofreModal'].forEach(id => {
-    const modal = document.getElementById(id);
-    if (event.target === modal) modal.style.display = "none";
+  document.getElementById("cerrarPerfilBtn").addEventListener("click", () => document.getElementById("profileModal").style.display = "none");
+  document.getElementById("botonInventario").addEventListener("click", () => {
+    mostrarInventario();
+    document.getElementById("inventoryModal").style.display = "flex";
   });
-};
+  document.getElementById("cerrarInventarioBtn").addEventListener("click", () => document.getElementById("inventoryModal").style.display = "none");
+  document.getElementById("botonMisiones").addEventListener("click", () => {
+    mostrarMisiones("diarias");
+    document.getElementById("missionsModal").style.display = "flex";
+  });
+  document.getElementById("cerrarMisionesBtn").addEventListener("click", () => document.getElementById("missionsModal").style.display = "none");
 
-// ================== INICIALIZACIÓN ==================
-actualizarLlavesUI();
+  // ----------- MISIONES -----------
+  const misiones = {
+    diarias: [
+      {
+        id: "abrirInventario",
+        nombre: "🎒 Abrí el Inventario",
+        requerimiento: 1,
+        recompensa: { monedas: 2 },
+        progreso: 0,
+        tipo: "evento",
+        evento: "inventario",
+        completada: false
+      }
+    ],
+    semanales: [],
+    desafio: []
+  };
 
+  function mostrarMisiones(tipo) {
+    document.querySelectorAll("#missionsModal .tab-selector button").forEach(btn => btn.classList.remove("active"));
+    document.getElementById("tab" + tipo.charAt(0).toUpperCase() + tipo.slice(1)).classList.add("active");
+
+    const contenedor = document.getElementById("misionesContenedor");
+    contenedor.innerHTML = "";
+
+    if (tipo === "semanales" || tipo === "desafio") {
+      contenedor.innerHTML = `
+        <div class="proximamente">
+          <h3>¡Próximamente!</h3>
+          <p>Se agregarán nuevas misiones ${tipo === "semanales" ? "semanales" : "de desafío"} en futuras actualizaciones.</p>
+        </div>
+      `;
+      return;
+    }
+
+    misiones[tipo].forEach(m => {
+      const bloque = document.createElement("div");
+      bloque.classList.add("mission");
+      let progresoTexto = `${m.progreso}/${m.requerimiento}`;
+      let btn = "";
+
+      if (m.completada) {
+        progresoTexto = "✔️ Completada";
+      } else if (m.progreso >= m.requerimiento) {
+        btn = `<button class="btn-reclamar" data-tipo="${tipo}" data-id="${m.id}">Reclamar</button>`;
+      }
+
+      bloque.innerHTML = `
+        <strong>${m.nombre}</strong>
+        <small>Recompensa: ${m.recompensa.monedas} <img src="https://i.imgur.com/n9OyA2U.png" class="moneda-icon"></small>
+        <small>Progreso: ${progresoTexto}</small>
+        ${btn}
+      `;
+      contenedor.appendChild(bloque);
+    });
+
+    contenedor.querySelectorAll(".btn-reclamar").forEach(btn => {
+      btn.addEventListener("click", () => {
+        reclamarMision(btn.getAttribute("data-tipo"), btn.getAttribute("data-id"));
+      });
+    });
+  }
+  document.getElementById("tabDiarias").addEventListener("click", () => mostrarMisiones("diarias"));
+  document.getElementById("tabSemanales").addEventListener("click", () => mostrarMisiones("semanales"));
+  document.getElementById("tabDesafio").addEventListener("click", () => mostrarMisiones("desafio"));
+
+  function reclamarMision(tipo, id) {
+    const m = misiones[tipo].find(x => x.id === id);
+    if (m && !m.completada && m.progreso >= m.requerimiento) {
+      m.completada = true;
+      coins += m.recompensa.monedas;
+      guardarProgreso();
+      actualizarMonedas();
+      mostrarMisiones(tipo);
+      alert(`¡Misión completada! Ganaste ${m.recompensa.monedas} monedas 🎉`);
+    }
+  }
+
+  // ----------- AUXILIARES -----------
+  function actualizarMonedas() {
+    document.getElementById("coins").innerText = coins;
+    document.getElementById("perfilCoins") && (document.getElementById("perfilCoins").innerText = coins);
+    guardarProgreso();
+  }
+  function actualizarLlaves() {
+    document.getElementById("keys").innerText = keys;
+    document.getElementById("userKeys") && (document.getElementById("userKeys").innerText = keys);
+    document.getElementById("perfilKeys") && (document.getElementById("perfilKeys").innerText = keys);
+    guardarProgreso();
+  }
+  actualizarMonedas();
+  actualizarLlaves();
+  mostrarInventario();
+
+  // ----------- NUEVA TIENDA -----------
+  const TIENDA_PAQUETES = [
+    { nombre:"Inicio Granjero", llaves:100, bonus:"1 cultivo épico aleatorio", precio:2.99 },
+    { nombre:"Inicio Pro", llaves:250, bonus:"3 cultivos raros aleatorios", precio:5 },
+    { nombre:"Granjero Avanzado", llaves:500, bonus:"2 épicos y 2 raros aleatorios", precio:10 },
+    { nombre:"Extraordinario", llaves:700, bonus:"1 legendaria aleatoria", precio:20 },
+    { nombre:"Mega Épico", llaves:1000, bonus:"2 épicos y 1 legendario aleatorio", precio:40 },
+    { nombre:"Granjero Legendario", llaves:2000, bonus:"Rango avanzado, beneficios VIP", precio:100 }
+  ];
+  document.getElementById("botonTienda").onclick = () => {
+    document.getElementById("newShopModal").style.display = "flex";
+    mostrarPaquetesTienda();
+  };
+  document.getElementById("cerrarTiendaNuevaBtn").onclick = () => document.getElementById("newShopModal").style.display = "none";
+  function mostrarPaquetesTienda() {
+    let html = "";
+    TIENDA_PAQUETES.forEach((p,i) => {
+      html += `
+        <div class="plant" style="flex-direction:column;align-items:flex-start;background:#fff;">
+          <b style="font-size:1.1em;color:#3777ca;">${p.nombre}</b>
+          <span>Llaves: <b style="color:#43a047">${p.llaves}</b></span>
+          <span>Incluye: <span style="color:#9b51e0">${p.bonus}</span></span>
+          <span style="color:#222">Precio: <b style="font-size:1.1em;">$${p.precio}</b></span>
+          <button style="margin:8px 0;background:#FFD600;border:none;border-radius:5px;padding:8px 24px;font-weight:bold;" onclick="comprarPaqueteTienda(${i})">Comprar</button>
+        </div>
+      `;
+    });
+    document.getElementById("paquetesTienda").innerHTML = html;
+  }
+  window.comprarPaqueteTienda = function(i) {
+    alert("¡Compra simulada del paquete " + TIENDA_PAQUETES[i].nombre + " por $" + TIENDA_PAQUETES[i].precio + "!\n(Implementa pasarela de pagos real para producción)");
+    keys += TIENDA_PAQUETES[i].llaves;
+    actualizarLlaves();
+    document.getElementById("newShopModal").style.display = "none";
+  };
+
+  document.getElementById("convertirMonedasBtn").onclick = () => {
+    if (coins < 100) { alert("No tienes suficientes monedas."); return; }
+    coins -= 100; keys += 10;
+    actualizarMonedas(); actualizarLlaves();
+    alert("¡Has convertido 100 monedas en 10 llaves!");
+  };
+  document.getElementById("retirosBtn").onclick = () => {
+    document.getElementById("retirosModal").style.display = "flex";
+  };
+  document.getElementById("cerrarRetirosBtn").onclick = () => document.getElementById("retirosModal").style.display = "none";
+
+  // ----------- OPCIONES -----------
+  document.getElementById("botonOpciones").onclick = () => {
+    document.getElementById("optionsModal").style.display = "flex";
+  };
+  document.getElementById("cerrarOpcionesBtn").onclick = () => document.getElementById("optionsModal").style.display = "none";
+  document.getElementById("borrarProgresoBtn").onclick = () => {
+    if (confirm("¿Seguro que deseas borrar TODO tu progreso?")) {
+      localStorage.clear();
+      location.reload();
+    }
+  };
+  document.getElementById("ajustarBrilloBtn").onclick = () => {
+    const body = document.body;
+    body.style.filter = body.style.filter === "brightness(0.7)" ? "none" : "brightness(0.7)";
+  };
+  let musicaActiva = true;
+  document.getElementById("musicaBtn").onclick = function() {
+    musicaActiva = !musicaActiva;
+    this.innerText = musicaActiva ? "Desactivar Música" : "Activar Música";
+    // Aquí puedes pausar o reproducir la música si tienes audio de fondo
+  };
+  document.getElementById("billeteraBtn").onclick = () => alert("Función de billetera próximamente.");
+  document.getElementById("politicasLink").onclick = function(e) {
+    e.preventDefault();
+    document.getElementById("optionsModal").style.display = "none";
+    document.getElementById("politicasModal").style.display = "flex";
+  };
+  document.getElementById("cerrarPoliticasBtn").onclick = () => document.getElementById("politicasModal").style.display = "none";
+});
 </script>
+</body>
+</html>
