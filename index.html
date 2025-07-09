@@ -1007,12 +1007,55 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("cerrarPoliticasBtn").onclick = () => document.getElementById("politicasModal").style.display = "none";
 
   // ========== SISTEMA DE CANJE DE CÓDIGOS ==========
-  const codigosValidos = {
-    "XAN-1234-PAQ1": { paquete: 0, descripcion: "Inicio Granjero: 100 llaves + 1 cultivo épico" },
-    "XAN-5678-PAQ2": { paquete: 1, descripcion: "Inicio Pro: 250 llaves + 3 raros" },
-    "XAN-9999-PAQ3": { paquete: 2, descripcion: "Granjero Avanzado: 500 llaves + 2 épicos y 2 raros" }
-    // ...agrega todos los códigos que quieras
-  };
+    const codigosValidos = {
+  // Paquete 1: Inicio Granjero
+  "XAN-1A1B-PAQ1": { paquete: 0, descripcion: "Inicio Granjero: 100 llaves + 1 cultivo épico" },
+  "XAN-2A2B-PAQ1": { paquete: 0, descripcion: "Inicio Granjero: 100 llaves + 1 cultivo épico" },
+  "XAN-3A3B-PAQ1": { paquete: 0, descripcion: "Inicio Granjero: 100 llaves + 1 cultivo épico" },
+  "XAN-4A4B-PAQ1": { paquete: 0, descripcion: "Inicio Granjero: 100 llaves + 1 cultivo épico" },
+  "XAN-5A5B-PAQ1": { paquete: 0, descripcion: "Inicio Granjero: 100 llaves + 1 cultivo épico" },
+  "XAN-6A6B-PAQ1": { paquete: 0, descripcion: "Inicio Granjero: 100 llaves + 1 cultivo épico" },
+
+  // Paquete 2: Inicio Pro
+  "XAN-1C1D-PAQ2": { paquete: 1, descripcion: "Inicio Pro: 250 llaves + 3 raros" },
+  "XAN-2C2D-PAQ2": { paquete: 1, descripcion: "Inicio Pro: 250 llaves + 3 raros" },
+  "XAN-3C3D-PAQ2": { paquete: 1, descripcion: "Inicio Pro: 250 llaves + 3 raros" },
+  "XAN-4C4D-PAQ2": { paquete: 1, descripcion: "Inicio Pro: 250 llaves + 3 raros" },
+  "XAN-5C5D-PAQ2": { paquete: 1, descripcion: "Inicio Pro: 250 llaves + 3 raros" },
+  "XAN-6C6D-PAQ2": { paquete: 1, descripcion: "Inicio Pro: 250 llaves + 3 raros" },
+
+  // Paquete 3: Granjero Avanzado
+  "XAN-1E1F-PAQ3": { paquete: 2, descripcion: "Granjero Avanzado: 500 llaves + 2 épicos y 2 raros" },
+  "XAN-2E2F-PAQ3": { paquete: 2, descripcion: "Granjero Avanzado: 500 llaves + 2 épicos y 2 raros" },
+  "XAN-3E3F-PAQ3": { paquete: 2, descripcion: "Granjero Avanzado: 500 llaves + 2 épicos y 2 raros" },
+  "XAN-4E4F-PAQ3": { paquete: 2, descripcion: "Granjero Avanzado: 500 llaves + 2 épicos y 2 raros" },
+  "XAN-5E5F-PAQ3": { paquete: 2, descripcion: "Granjero Avanzado: 500 llaves + 2 épicos y 2 raros" },
+  "XAN-6E6F-PAQ3": { paquete: 2, descripcion: "Granjero Avanzado: 500 llaves + 2 épicos y 2 raros" },
+
+  // Paquete 4: Extraordinario
+  "XAN-1G1H-PAQ4": { paquete: 3, descripcion: "Extraordinario: 700 llaves + 1 legendaria aleatoria" },
+  "XAN-2G2H-PAQ4": { paquete: 3, descripcion: "Extraordinario: 700 llaves + 1 legendaria aleatoria" },
+  "XAN-3G3H-PAQ4": { paquete: 3, descripcion: "Extraordinario: 700 llaves + 1 legendaria aleatoria" },
+  "XAN-4G4H-PAQ4": { paquete: 3, descripcion: "Extraordinario: 700 llaves + 1 legendaria aleatoria" },
+  "XAN-5G5H-PAQ4": { paquete: 3, descripcion: "Extraordinario: 700 llaves + 1 legendaria aleatoria" },
+  "XAN-6G6H-PAQ4": { paquete: 3, descripcion: "Extraordinario: 700 llaves + 1 legendaria aleatoria" },
+
+  // Paquete 5: Mega Épico
+  "XAN-1I1J-PAQ5": { paquete: 4, descripcion: "Mega Épico: 1000 llaves + 2 épicos y 1 legendario aleatorio" },
+  "XAN-2I2J-PAQ5": { paquete: 4, descripcion: "Mega Épico: 1000 llaves + 2 épicos y 1 legendario aleatorio" },
+  "XAN-3I3J-PAQ5": { paquete: 4, descripcion: "Mega Épico: 1000 llaves + 2 épicos y 1 legendario aleatorio" },
+  "XAN-4I4J-PAQ5": { paquete: 4, descripcion: "Mega Épico: 1000 llaves + 2 épicos y 1 legendario aleatorio" },
+  "XAN-5I5J-PAQ5": { paquete: 4, descripcion: "Mega Épico: 1000 llaves + 2 épicos y 1 legendario aleatorio" },
+  "XAN-6I6J-PAQ5": { paquete: 4, descripcion: "Mega Épico: 1000 llaves + 2 épicos y 1 legendario aleatorio" },
+
+  // Paquete 6: Granjero Legendario
+  "XAN-1K1L-PAQ6": { paquete: 5, descripcion: "Granjero Legendario: 2000 llaves + Rango avanzado, beneficios VIP" },
+  "XAN-2K2L-PAQ6": { paquete: 5, descripcion: "Granjero Legendario: 2000 llaves + Rango avanzado, beneficios VIP" },
+  "XAN-3K3L-PAQ6": { paquete: 5, descripcion: "Granjero Legendario: 2000 llaves + Rango avanzado, beneficios VIP" },
+  "XAN-4K4L-PAQ6": { paquete: 5, descripcion: "Granjero Legendario: 2000 llaves + Rango avanzado, beneficios VIP" },
+  "XAN-5K5L-PAQ6": { paquete: 5, descripcion: "Granjero Legendario: 2000 llaves + Rango avanzado, beneficios VIP" },
+  "XAN-6K6L-PAQ6": { paquete: 5, descripcion: "Granjero Legendario: 2000 llaves + Rango avanzado, beneficios VIP" },
+    };
   window.canjearCodigo = function() {
     const input = document.getElementById("codigoInput").value.trim();
     if (!input) { alert("Ingresa un código."); return; }
