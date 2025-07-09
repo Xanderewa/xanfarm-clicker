@@ -411,15 +411,73 @@
     </div>
   </div>
 
-  <!-- Tienda (próximamente) -->
-  <div id="shopModal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" id="cerrarTiendaBtn">×</span>
-      <h2>🏪 Tienda</h2>
-      <p>¡Próximamente podrás comprar llaves, cambiar monedas y adquirir UsdtV!</p>
+  <!-- 🛍️ TIENDA DE LLAVES XANFARM -->
+<section id="tienda" class="seccion">
+  <h2>Tienda de Llaves</h2>
+
+  <!-- 💸 Botón para acceder a sección de retiros -->
+  <button onclick="mostrarSeccion('retiros')" style="margin-bottom: 20px;">💸 Ir a Retiros</button>
+
+  <!-- 📦 PAQUETES DE LLAVES -->
+  <div class="tienda-paquetes">
+
+    <div class="paquete">
+      <h3>Inicio Granjero</h3>
+      <p>🔑 100 Llaves + 🍇 1 Cultivo Morado Aleatorio</p>
+      <p class="precio">$2.99</p>
+      <button disabled>Próximamente</button>
+    </div>
+
+    <div class="paquete">
+      <h3>Granjero Pro</h3>
+      <p>🔑 250 Llaves + 🌿 3 Cultivos Raros Aleatorios</p>
+      <p class="precio">$5.00</p>
+      <button disabled>Próximamente</button>
+    </div>
+
+    <div class="paquete">
+      <h3>Granjero Avanzado</h3>
+      <p>🔑 500 Llaves + 🍆 2 Morados + 🌶️ 2 Raros</p>
+      <p class="precio">$10.00</p>
+      <button disabled>Próximamente</button>
+    </div>
+
+    <div class="paquete">
+      <h3>Extraordinario</h3>
+      <p>🔑 700 Llaves + 🌟 1 Legendario Aleatorio</p>
+      <p class="precio">$20.00</p>
+      <button disabled>Próximamente</button>
+    </div>
+
+    <div class="paquete">
+      <h3>Mega Épico</h3>
+      <p>🔑 1000 Llaves + 🍇 2 Morados + 🌟 1 Legendario</p>
+      <p class="precio">$40.00</p>
+      <button disabled>Próximamente</button>
+    </div>
+
+    <div class="paquete">
+      <h3>Granjero Legendario</h3>
+      <p>🔑 2000 Llaves + 👑 Rango VIP y Beneficios Exclusivos</p>
+      <p class="precio">$100.00</p>
+      <button disabled>Próximamente</button>
     </div>
   </div>
 
+  <!-- 🔁 CONVERSIÓN DE MONEDAS -->
+  <div class="conversion">
+    <h3>Convertir Monedas por Llaves</h3>
+    <p>💰 100 monedas = 10 llaves</p>
+    <button onclick="convertirMonedas(100)">Convertir</button>
+  </div>
+</section>
+
+<!-- 💸 SECCIÓN DE RETIROS -->
+<section id="retiros" class="seccion">
+  <h2>💸 Retiros</h2>
+  <p>Pronto podrás conectar tu billetera digital y retirar tus llaves acumuladas.</p>
+  <button onclick="conectarBilletera()">Conectar Wallet</button>
+</section>
   <script>
   document.addEventListener("DOMContentLoaded", () => {
     // ---------- DATOS POR DEFECTO ----------
