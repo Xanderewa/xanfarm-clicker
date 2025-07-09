@@ -1,3 +1,20 @@
+// ✨ Mostrar una sola sección a la vez
+function mostrarSeccion(id) {
+  const secciones = document.querySelectorAll('.seccion');
+  secciones.forEach(seccion => {
+    seccion.style.display = 'none';
+  });
+
+  const activa = document.getElementById(id);
+  if (activa) {
+    activa.style.display = 'block';
+  }
+}
+
+// 🚀 Mostrar sección por defecto al iniciar
+window.onload = function () {
+  mostrarSeccion('perfil'); // Podés cambiar 'perfil' por otra sección si preferís
+};
 // 🌟 Probabilidades para Cofre de Plata
 function abrirCofrePlata() {
   let random = Math.random();
