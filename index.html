@@ -319,6 +319,32 @@
       margin-top: 8px;
       cursor: pointer;
     }
+    .perfil-fondo {
+  background: url('https://i.imgur.com/n9OyA2U.png') center/cover no-repeat, #15151a;
+  box-shadow: 0 0 25px #00ffe788;
+  color: #fff !important;
+  border: 2.5px solid #00ffe7;
+  position: relative;
+}
+.perfil-avatar {
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: center;
+}
+.gamer-rango {
+  background: linear-gradient(90deg, #00ffe7 10%, #0ff 40%, #aaf 60%, #00ffe7 90%);
+  color: #fff;
+  padding: 3px 18px;
+  border-radius: 12px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  font-size: 1.13em;
+  filter: drop-shadow(0 0 5px #00ffe7) drop-shadow(0 0 8px #fff);
+  text-shadow: 0 0 7px #00ffe7, 0 0 15px #fff;
+  border: 2px solid #00ffe7;
+  margin-left: 4px;
+  box-shadow: 0 0 18px #00ffe788;
+}
   </style>
 </head>
 <body>
@@ -372,18 +398,29 @@
     </div>
   </div>
 
-  <!-- Perfil Modal -->
-  <div id="profileModal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" id="cerrarPerfilBtn">×</span>
-      <h2>🧑‍🌾 Tu Perfil</h2>
-      <p><strong>Rango:</strong> <span id="perfilRango"></span></p>
-      <p><strong>Producción diaria:</strong> <span id="perfilProduccion"></span> monedas/día</p>
-      <p><strong>Monedas:</strong> <span id="perfilCoins">0</span></p>
-      <p><strong>Llaves:</strong> <span id="perfilKeys">0</span></p>
-      <p><strong>Nivel:</strong> 1</p>
+  <!-- Perfil Modal Mejorado -->
+<div id="profileModal" class="modal">
+  <div class="modal-content perfil-fondo">
+    <span class="close-btn" id="cerrarPerfilBtn">×</span>
+    <h2 style="margin-bottom:8px;">🧑‍🌾 Tu Perfil</h2>
+    <div class="perfil-avatar">
+      <img src="https://i.imgur.com/n9OyA2U.png" alt="Avatar" style="width:90px; border-radius:50%; border:3px solid #00ffe7;box-shadow:0 0 18px #00ffe799;">
+    </div>
+    <div style="margin:12px 0 8px 0;">
+      <strong>Rango:</strong>
+      <span id="perfilRango" class="gamer-rango"></span>
+    </div>
+    <div>
+      <strong>Producción diaria:</strong> <span id="perfilProduccion"></span> monedas/día
+    </div>
+    <div>
+      <strong>Monedas:</strong> <span id="perfilCoins">0</span>
+    </div>
+    <div>
+      <strong>Llaves:</strong> <span id="perfilKeys">0</span>
     </div>
   </div>
+</div>
 
   <!-- Inventario Modal -->
   <div id="inventoryModal" class="modal">
