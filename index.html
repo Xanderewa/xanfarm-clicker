@@ -810,13 +810,30 @@ document.addEventListener("DOMContentLoaded", () => {
   ];
 
   // ---------- CARGA Y GUARDADO ----------
-  function guardarProgreso() {
+  // 🧠 Variables globales necesarias
+let coins = 0;
+let keys = 0;
+let plants = [];
+let cofresGratis = { oro: 0, plata: 0 };
+let lastRecolectado = Date.now();
+let monedasGF = 0;
+let historialRetiros = [];
+
+// 💾 Guardar progreso
+function guardarProgreso() {
   localStorage.setItem("xanfarm-progreso", JSON.stringify({
-    coins, keys, plants, cofresGratis, lastRecolectado, monedasGF
+    coins,
+    keys,
+    plants,
+    cofresGratis,
+    lastRecolectado,
+    monedasGF
   }));
   localStorage.setItem("xanfarm-retiros", JSON.stringify(historialRetiros));
+  console.log("✅ Progreso guardado");
 }
 
+// 📦 Cargar progreso
 function cargarProgreso() {
   const data = localStorage.getItem("xanfarm-progreso");
   if (!data) return false;
@@ -829,33 +846,22 @@ function cargarProgreso() {
     lastRecolectado = obj.lastRecolectado ?? Date.now();
     monedasGF = obj.monedasGF ?? 0;
     historialRetiros = JSON.parse(localStorage.getItem("xanfarm-retiros")) || [];
+    console.log("✅ Progreso cargado");
     return true;
   } catch {
+    console.error("❌ Error al cargar progreso");
     return false;
   }
 }
-  // ---------- VARIABLES DEL JUEGO ----------
-let monedasGF = 0;
-let historialRetiros = [];
-// Al guardar/cargar progreso, incluye monedasGF
-function guardarProgreso() {
-  localStorage.setItem("xanfarm-progreso", JSON.stringify({
-    coins, keys, plants, cofresGratis, lastRecolectado, monedasGF
-  }));
-  localStorage.setItem("xanfarm-retiros", JSON.stringify(historialRetiros));
-}
-function cargarProgreso() {
-  const data = JSON.parse(localStorage.getItem("xanfarm-progreso"));
-  if (data) {
-    coins = data.coins ?? 0;
-    keys = data.keys ?? 0;
-    plants = data.plants ?? [];
-    cofresGratis = data.cofresGratis ?? 0;
-    lastRecolectado = data.lastRecolectado ?? Date.now();
-    monedasGF = data.monedasGF ?? 0;
-  }
-  historialRetiros = JSON.parse(localStorage.getItem("xanfarm-retiros")) || [];
-}
+
+// 🕓 Ejecutar carga automática al iniciar
+window.addEventListener("load", () => {
+  const cargado = cargarProgreso();
+  if (!cargado) guardarProgreso(); // iniciar nuevo si no hay datos
+});
+
+// 🧪 Ejemplo: guardar cada 30 segundos automáticamente
+setInterval(guardarProgreso, 30000);
 
 // Mostrar Balance
 document.getElementById("botonBalance").onclick = () => {
@@ -1465,4 +1471,4 @@ window.onload = function () {
 });
 </script>
 </body>
-    </html>
+</html>
