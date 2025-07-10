@@ -28,7 +28,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      color: white;
+      color: red;
       padding: 20px 0 0 0;
       z-index: 1;
       position: relative;
@@ -44,7 +44,7 @@
     }
     .moneda-bar span {
       background: rgba(255,255,255,0.85);
-      color: #333;
+      color: #33;
       border-radius: 16px;
       padding: 6px 14px;
       margin: 0 2px;
@@ -140,7 +140,7 @@
     .cofre-open-btn {
       padding: 10px 26px;
       background-color: #3777ca;
-      color: white;
+      color: black;
       border: 0;
       border-radius: 8px;
       font-size: 1.1rem;
@@ -345,7 +345,6 @@
       margin-left: 4px;
       box-shadow: 0 0 18px #00ffe788;
     }
-    /* === INICIO ACTUALIZACIÓN === */
     .cofre-fondo-plata {
       background: url('https://i.imgur.com/9DvPrS8.png') center/cover no-repeat, #f7f7f7 !important;
     }
@@ -382,13 +381,262 @@
     .canjear-codigo-box button:hover {
       background: #3689b0;
     }
-    /* === FIN ACTUALIZACIÓN === */
+    :root {
+  --color-principal: #3777ca;
+  --color-secundario: #f8f8fa;
+  --color-acento: #ffd700;
+  --color-btn: #43b581;
+  --color-btn-retirar: #f7b731;
+  --color-fondo-modal: rgba(40,40,70,0.95);
+  --color-txt: #222;
+}
+
+/* Botones de menú */
+.menu-btn {
+  background: var(--color-principal);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 12px 20px;
+  margin: 5px 0;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 8px #0002;
+  transition: background 0.2s;
+}
+.menu-btn:hover {
+  background: #28599a;
+}
+
+/* Modal base */
+.modal {
+  display: none;
+  position: fixed; z-index: 999;
+  left: 0; top: 0; width: 100vw; height: 100vh;
+  background: var(--color-fondo-modal);
+  align-items: center; justify-content: center;
+}
+.modal-content {
+  background: var(--color-secundario);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px #0005;
+  padding: 32px 24px;
+  min-width: 320px; max-width: 90vw;
+  position: relative;
+  color: var(--color-txt);
+}
+
+.close-btn {
+  position: absolute; top: 16px; right: 24px;
+  cursor: pointer; font-size: 1.5em;
+  color: #888;
+}
+.close-btn:hover { color: #f44; }
+
+/* Balance */
+#balanceModal .modal-content {
+  border-left: 7px solid var(--color-principal);
+  text-align: left;
+}
+.balance-list {
+  margin: 15px 0 10px 0;
+  padding: 0;
+}
+.balance-list li {
+  list-style: none;
+  margin: 10px 0;
+  font-size: 1.2em;
+  font-weight: 500;
+}
+.balance-moneda { color: var(--color-principal); }
+.balance-gf { color: var(--color-btn-retirar); }
+.balance-llaves { color: var(--color-btn); }
+
+/* Modal Retiros */
+#retirosModal .modal-content {
+  border-left: 7px solid var(--color-btn-retirar);
+}
+#retiroMensaje {
+  margin-top: 12px;
+  font-weight: 600;
+  color: var(--color-btn);
+  min-height: 22px;
+}
+
+#convertirAGFBtn {
+  background: var(--color-btn);
+  color: #fff;
+}
+#convertirAGFBtn:hover { background: #2e9d5b; }
+
+#pedirRetiroBtn {
+  background: var(--color-btn-retirar);
+  color: #222;
+}
+#pedirRetiroBtn:hover { background: #e1a61f; }
+
+.historial-table {
+  width: 100%; margin-top: 16px; border-collapse: collapse;
+  font-size: 0.97em;
+}
+.historial-table th, .historial-table td {
+  padding: 7px 6px; text-align: center;
+  border-bottom: 1px solid #e2e2e2;
+}
+.historial-table th {
+  background: #f7f7f7;
+  color: #444;
+  font-weight: 600;
+}
+.historial-table .pendiente { color: #f39c12; font-weight: 700; }
+.historial-table .pagado { color: #43b581; font-weight: 700; }
+
+@media (max-width: 540px) {
+  .modal-content { min-width: 95vw; padding: 18px 5vw; }
+  .historial-table th, .historial-table td { font-size: 0.9em; }
+}
+    /* ==== NUEVOS COLORES PARA XANFARM ==== */
+
+/* 1. Botones menú inferior: Balance y Retiros */
+.menu-btn,
+#retirosBtn,
+#convertirAGFBtn,
+#pedirRetiroBtn {
+  background: linear-gradient(90deg, #7ec850 60%, #4a7e2d 100%);
+  color: #fff !important;
+  border: none;
+  font-weight: bold;
+  box-shadow: 0 2px 10px #4a7e2d44;
+  transition: background 0.17s, color 0.17s;
+}
+.menu-btn:hover,
+#retirosBtn:hover,
+#convertirAGFBtn:hover,
+#pedirRetiroBtn:hover {
+  background: linear-gradient(90deg, #62a337 60%, #275325 100%);
+  color: #ffd700 !important;
+}
+
+/* 2. Títulos principales */
+#pantallaPrincipal h1,
+.modal-content h2,
+.perfil-fondo h2 {
+  color: #42652d !important;
+  text-shadow: 0 2px 10px #fff8, 0 1px 0 #adc27e;
+  letter-spacing: 1px;
+  font-weight: 900;
+}
+
+/* 3. Pantalla de inicio: mejora contraste y legibilidad */
+#pantallaPrincipal,
+#pantallaPrincipal span,
+#pantallaPrincipal > div,
+#contadorProduccion {
+  color: #2d3122 !important;
+  text-shadow: 0 1px 5px #fff8;
+}
+
+/* 4. Modal de perfil: fondo oscuro, texto claro */
+.perfil-fondo {
+  background: linear-gradient(135deg, #6dbd7a 65%, #eaf6e2 100%) !important;
+  color: #183b13 !important;
+  border: 2.5px solid #3777ca;
+  box-shadow: 0 0 25px #3777ca55;
+}
+.perfil-fondo .perfil-avatar img {
+  border: 3px solid #fffda2 !important;
+  box-shadow: 0 0 14px #adc27e88 !important;
+}
+.gamer-rango {
+  background: linear-gradient(90deg, #e6e24c 10%, #7ec850 60%, #e6e24c 90%);
+  color: #2d3122 !important;
+  border: 2px solid #7ec850 !important;
+  text-shadow: 0 1px 6px #fff9, 0 0 7px #adc27e66;
+}
+
+/* 5. Extra: resalta btn recolectar */
+#btnRecolectar {
+  background: linear-gradient(90deg, #f6be3e 60%, #c2a43e 100%);
+  color: #fff;
+  border: none;
+  font-weight: bold;
+  box-shadow: 0 2px 10px #c2a43e44;
+}
+#btnRecolectar:hover {
+  background: linear-gradient(90deg, #d19d21 60%, #847200 100%);
+  color: #fffbe7;
+}
+
+/* 6. Extra: mejora titulos secundarios */
+.modal-content h3,
+.modal-content strong {
+  color: #3777ca !important;
+}
+
+/* 7. Si algún botón secundario queda blanco, fuerza color campestre */
+.menu button:not(.menu-btn) {
+  background: #eaf6e2;
+  color: #42652d;
+  border: 1.5px solid #c2e7b0;
+}
+.menu button:not(.menu-btn):hover {
+  background: #c2e7b0;
+  color: #183b13;
+}
+
+/* ==== FIN NUEVOS COLORES ==== */
   </style>
 </head>
 <body>
+  <!-- Modal Balance -->
+<div id="balanceModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" id="cerrarBalanceBtn">×</span>
+    <h2>💰 Tu Balance</h2>
+    <ul class="balance-list">
+      <li>Monedas normales: <span class="balance-moneda" id="balMonedas">0</span></li>
+      <li>Monedas GF: <span class="balance-gf" id="balGF">0</span></li>
+      <li>Llaves: <span class="balance-llaves" id="balKeys">0</span></li>
+    </ul>
+  </div>
+</div>
+
+<!-- Modal Retiros -->
+<div id="retirosModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" id="cerrarRetirosBtn">×</span>
+    <h2>🏦 Sistema de Retiros</h2>
+    <div>
+      <strong>Monedas normales:</strong> <span id="retiroMonedas">0</span><br>
+      <strong>Monedas GF:</strong> <span id="retiroGF">0</span>
+    </div>
+    <div style="margin-top:14px;">
+      <button id="convertirAGFBtn">Convertir 100 monedas → 1 GF</button>
+    </div>
+    <div style="margin-top:14px;">
+      <button id="pedirRetiroBtn">Solicitar retiro (mín. 100 GF)</button>
+    </div>
+    <div id="retiroMensaje"></div>
+    <h3 style="margin-top:23px;">Historial de retiros</h3>
+    <table class="historial-table" id="tablaHistorialRetiros">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Cantidad GF</th>
+          <th>Fecha</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Se llena dinámicamente -->
+      </tbody>
+    </table>
+  </div>
+</div>
   <div id="recoleccionAnimada"></div>
   <div id="pantallaPrincipal">
-    <h1>🌱 ¡Bienvenido a XanFarm!</h1>
+    <h1> ¡Bienvenido a XanFarm!♡</h1>
     <div class="moneda-bar">
       <span>
         <img src="https://i.imgur.com/n9OyA2U.png" class="moneda-icon" alt="Moneda">
@@ -413,6 +661,11 @@
     <button id="botonMisiones">🧭 Misiones</button>
     <button id="botonTienda">🏪 Tienda</button>
     <button id="botonOpciones">⚙️ Opciones</button>
+    <div id="menu-acciones">
+  <!-- Otros botones -->
+  <button id="botonBalance" class="menu-btn">💰 Balance</button>
+  <button id="retirosBtn" class="menu-btn">🏦 Retiros</button>
+</div>
   </div>
 
   <!-- Cofres Modal -->
@@ -442,7 +695,7 @@
       <span class="close-btn" id="cerrarPerfilBtn">×</span>
       <h2 style="margin-bottom:8px;">🧑‍🌾 Tu Perfil</h2>
       <div class="perfil-avatar">
-        <img src="https://i.imgur.com/n9OyA2U.png" alt="Avatar" style="width:90px; border-radius:50%; border:3px solid #00ffe7;box-shadow:0 0 18px #00ffe799;">
+        <img src="https://i.imgur.com/n9OyA2U.png" alt="Avatar" style="width:90px; border-radius:200%; border:3px solid #00ffe7;box-shadow:0 0 18px #00ffe799;">
       </div>
       <div style="margin:12px 0 8px 0;">
         <strong>Rango:</strong>
@@ -536,7 +789,7 @@
     <div class="modal-content">
       <span class="close-btn" id="cerrarRetirosBtn">×</span>
       <h2>Retiros</h2>
-      <div>Próximamente podrás retirar recompensas vinculando tu billetera.</div>
+      <div>Contacta al Soporte en el Bot Pay.</div>
     </div>
   </div>
   <script>
@@ -578,11 +831,136 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ---------- VARIABLES DEL JUEGO ----------
-  let coins = 0, keys = 0;
-  let plants = JSON.parse(JSON.stringify(PLANTS_DEFAULT));
-  let cofresGratis = { oro: 0, plata: 0 };
-  let lastRecolectado = Date.now();
+let monedasGF = 0;
+let historialRetiros = [];
+// Al guardar/cargar progreso, incluye monedasGF
+function guardarProgreso() {
+  localStorage.setItem("xanfarm-progreso", JSON.stringify({
+    coins, keys, plants, cofresGratis, lastRecolectado, monedasGF
+  }));
+  localStorage.setItem("xanfarm-retiros", JSON.stringify(historialRetiros));
+}
+function cargarProgreso() {
+  const data = JSON.parse(localStorage.getItem("xanfarm-progreso"));
+  if (data) {
+    coins = data.coins ?? 0;
+    keys = data.keys ?? 0;
+    plants = data.plants ?? [];
+    cofresGratis = data.cofresGratis ?? 0;
+    lastRecolectado = data.lastRecolectado ?? Date.now();
+    monedasGF = data.monedasGF ?? 0;
+  }
+  historialRetiros = JSON.parse(localStorage.getItem("xanfarm-retiros")) || [];
+}
 
+// Mostrar Balance
+document.getElementById("botonBalance").onclick = () => {
+  document.getElementById("balMonedas").innerText = coins;
+  document.getElementById("balGF").innerText = monedasGF;
+  document.getElementById("balKeys").innerText = keys;
+  document.getElementById("balanceModal").style.display = "flex";
+};
+document.getElementById("cerrarBalanceBtn").onclick = () =>
+  document.getElementById("balanceModal").style.display = "none";
+
+// Abrir Retiros
+document.getElementById("retirosBtn").onclick = () => {
+  document.getElementById("retiroMonedas").innerText = coins;
+  document.getElementById("retiroGF").innerText = monedasGF;
+  document.getElementById("retiroMensaje").innerText = "";
+  renderizarHistorialRetiros();
+  document.getElementById("retirosModal").style.display = "flex";
+};
+document.getElementById("cerrarRetirosBtn").onclick = () =>
+  document.getElementById("retirosModal").style.display = "none";
+
+// Conversión monedas → GF
+document.getElementById("convertirAGFBtn").onclick = () => {
+  if (coins < 100) {
+    document.getElementById("retiroMensaje").innerText =
+      "No tienes suficientes monedas normales para convertir.";
+    return;
+  }
+  coins -= 100;
+  monedasGF += 1;
+  guardarProgreso();
+  document.getElementById("retiroMonedas").innerText = coins;
+  document.getElementById("retiroGF").innerText = monedasGF;
+  actualizarMonedas();
+  document.getElementById("retiroMensaje").innerText = "¡Conversión exitosa!";
+};
+
+// Solicitar retiro
+document.getElementById("pedirRetiroBtn").onclick = () => {
+  if (monedasGF < 100) {
+    document.getElementById("retiroMensaje").innerText =
+      "El mínimo de retiro es 100 GF.";
+    return;
+  }
+  monedasGF -= 100;
+  const retiro = registrarRetiro(100);
+  guardarProgreso();
+  document.getElementById("retiroGF").innerText = monedasGF;
+  renderizarHistorialRetiros();
+  document.getElementById("retiroMensaje").innerText =
+    `¡Solicitud enviada! Tu ID de retiro es ${retiro.id}. Contácta al admin para recibir tu pago.`;
+};
+
+// Registrar retiro
+function registrarRetiro(gfCantidad) {
+  const id =
+    "RET-" +
+    Date.now().toString(36) +
+    "-" +
+    Math.floor(Math.random() * 10000).toString(36);
+  const retiro = {
+    id,
+    gf: gfCantidad,
+    fecha: new Date().toLocaleString(),
+    estado: "pendiente",
+  };
+  historialRetiros.push(retiro);
+  localStorage.setItem("xanfarm-retiros", JSON.stringify(historialRetiros));
+  return retiro;
+}
+
+// Renderizar tabla de historial de retiros
+function renderizarHistorialRetiros() {
+  const tbody = document.getElementById("tablaHistorialRetiros").querySelector("tbody");
+  tbody.innerHTML = "";
+  if (!historialRetiros.length) {
+    tbody.innerHTML =
+      "<tr><td colspan='4' style='color:#999'>Sin retiros realizados</td></tr>";
+  } else {
+    historialRetiros
+      .slice()
+      .reverse()
+      .forEach((r) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${r.id}</td>
+          <td>${r.gf}</td>
+          <td>${r.fecha}</td>
+          <td class="${r.estado}">${r.estado.charAt(0).toUpperCase() + r.estado.slice(1)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+  }
+}
+function marcarRetiroComoPagado(id) {
+  const retiro = historialRetiros.find((r) => r.id === id);
+  if (retiro) {
+    retiro.estado = "pagado";
+    guardarProgreso();
+    renderizarHistorialRetiros();
+    alert("Retiro marcado como pagado.");
+  }
+}
+// No olvides llamar cargarProgreso() al iniciar
+window.onload = function () {
+  cargarProgreso();
+  actualizarMonedas(); // si ya tienes esta función para actualizar la UI
+};
   // ---------- BONO DE BIENVENIDA ----------
   let yaRecibioBono = localStorage.getItem("xanfarm-yaRecibioBono") === "1";
   if (!cargarProgreso()) {
@@ -1007,7 +1385,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("cerrarPoliticasBtn").onclick = () => document.getElementById("politicasModal").style.display = "none";
 
   // ========== SISTEMA DE CANJE DE CÓDIGOS ==========
-    const codigosValidos = {
+  const codigosValidos = {
   // Paquete 1: Inicio Granjero
   "XAN-1A1B-PAQ1": { paquete: 0, descripcion: "Inicio Granjero: 100 llaves + 1 cultivo épico" },
   "XAN-2A2B-PAQ1": { paquete: 0, descripcion: "Inicio Granjero: 100 llaves + 1 cultivo épico" },
@@ -1054,8 +1432,8 @@ document.addEventListener("DOMContentLoaded", () => {
   "XAN-3K3L-PAQ6": { paquete: 5, descripcion: "Granjero Legendario: 2000 llaves + Rango avanzado, beneficios VIP" },
   "XAN-4K4L-PAQ6": { paquete: 5, descripcion: "Granjero Legendario: 2000 llaves + Rango avanzado, beneficios VIP" },
   "XAN-5K5L-PAQ6": { paquete: 5, descripcion: "Granjero Legendario: 2000 llaves + Rango avanzado, beneficios VIP" },
-  "XAN-6K6L-PAQ6": { paquete: 5, descripcion: "Granjero Legendario: 2000 llaves + Rango avanzado, beneficios VIP" },
-    };
+  "XAN-6K6L-PAQ6": { paquete: 5, descripcion: "Granjero Legendario: 2000 llaves + Rango avanzado, beneficios VIP" }
+  };
   window.canjearCodigo = function() {
     const input = document.getElementById("codigoInput").value.trim();
     if (!input) { alert("Ingresa un código."); return; }
@@ -1083,4 +1461,4 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 </body>
-</html>
+    </html>
