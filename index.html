@@ -1470,5 +1470,22 @@ window.onload = function () {
 
 });
 </script>
+  <!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "TU_API_KEY",
+    authDomain: "xanfarm-web.firebaseapp.com",
+    databaseURL: "https://xanfarm-web-default-rtdb.firebaseio.com",
+    projectId: "xanfarm-web",
+    storageBucket: "xanfarm-web.appspot.com",
+    messagingSenderId: "TU_SENDER_ID",
+    appId: "TU_APP_ID"
+  };
+  firebase.initializeApp(firebaseConfig);
+</script>
+  Integración Firebase SDK para guardado en la nube
 </body>
 </html>
